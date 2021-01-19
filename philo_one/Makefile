@@ -1,14 +1,16 @@
 NAME= philo_one
-SRCS= main.c
+SRCS= main.c data.c ft_atoi.c ft_isspace.c ft_isnum.c ft_isdigit.c errors.c philo_loop.c \
+	threads.c routine.c
 OBJS= $(addprefix srcs/,$(SRCS:.c=.o))
 CC= gcc
 CFLAGS= -Wall -Werror -Wextra
 HEADER= -I includes
+LIBS= -lpthread
 
 .c.o:
 	$(CC) $(CFLAGS) $(HEADER) -c $< -o $(<:.c=.o)
 $(NAME): $(OBJS)
-	$(CC) $(CFLAGS) $(OBJS) -o $(NAME)
+	$(CC) $(CFLAGS) $(OBJS) -o $(NAME) $(LIBS)
 all: $(NAME)
 clean:
 	rm -f $(OBJS)

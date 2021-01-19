@@ -1,7 +1,36 @@
-#include <stdio.h>
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: lsoulier <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/01/19 09:42:28 by lsoulier          #+#    #+#             */
+/*   Updated: 2021/01/19 09:42:51 by lsoulier         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-int main()
+#include "philo_one.h"
+
+int main(int argc, char **argv)
 {
-	printf("top\n");
-	return (0);
+	t_data philo_data;
+
+	if (argc >= MIN_NB_ARGS && argc <= MAX_NB_ARGS)
+	{
+		if (!check_arg(argc, argv))
+			return (EXIT_FAILURE);
+		if (!init_data(&philo_data, argc, argv))
+			return (EXIT_FAILURE);
+		while (!philo_data.someone_died
+			|| (philo_data.nb_meal_max != UNLIMITED_MEAL
+			&& philo_data.nb_meal != philo_data. nb_meal_max))
+			if (!philo_loop(&philo_data))
+				return (philo_loop_error(philo_data));
+		free(philo_data.philosophers);
+		free(philo_data.forks);
+	}
+	else
+		return (invalid_arg_nb());
+	return (EXIT_SUCCESS);
 }
