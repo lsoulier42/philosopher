@@ -29,6 +29,9 @@ void	init_philosophers(t_data *philo_data)
 		philo->time_to_die = philo_data->time_to_die;
 		philo->time_to_sleep = philo_data->time_to_sleep;
 		philo->time_to_eat = philo_data->time_to_eat;
+		philo->nb_meal_max = philo_data->nb_meal_max;
+		philo->meal_taken_ptr = &(philo_data->nb_meal_taken);
+		philo->someone_died_ptr = &(philo_data->someone_died);
 		philo->left_fork = &(philo_data->forks[i]);
 		if (i - 1 == -1)
 			philo->right_fork = &(philo_data->forks[philo_data->nb_philo - 1]);

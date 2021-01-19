@@ -12,8 +12,6 @@
 
 #include "philo_one.h"
 
-int			g_someone_died = 0;
-
 int main(int argc, char **argv)
 {
 	t_data			philo_data;
@@ -27,7 +25,9 @@ int main(int argc, char **argv)
 			return (EXIT_FAILURE);
 		if (!load_threads(&philo_data))
 			return (delete_data(&philo_data) + EXIT_FAILURE);
-		while (!(g_someone_died))
+		while (!(philo_data.someone_died)
+			&& (philo_data.nb_meal_taken < philo_data.nb_meal_max
+			|| philo_data.nb_meal_max == UNLIMITED_MEAL))
 			if (!philo_loop(&philo_data))
 				return (delete_data(&philo_data) + EXIT_FAILURE);
 		delete_data(&philo_data);

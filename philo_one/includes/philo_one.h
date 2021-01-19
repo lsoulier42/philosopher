@@ -44,6 +44,8 @@ typedef struct		s_philo
 {
 	pthread_mutex_t	*left_fork;
 	pthread_mutex_t *right_fork;
+	int 			*someone_died_ptr;
+	int 			*meal_taken_ptr;
 	int				num;
 	char			state;
 	char			nb_forks_taken;
@@ -52,6 +54,7 @@ typedef struct		s_philo
 	int				time_to_die;
 	int				time_to_eat;
 	int				time_to_sleep;
+	int				nb_meal_max;
 }					t_philo;
 
 typedef struct		s_data
@@ -61,13 +64,12 @@ typedef struct		s_data
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				nb_meal_max;
-	int				nb_meal_taken;
+	int 			someone_died;
+	int 			nb_meal_taken;
 	pthread_mutex_t	*forks;
 	pthread_t 		*threads;
 	t_philo 		*philosophers;
 }					t_data;
-
-extern int			g_someone_died;
 
 int					init_data(t_data *philo_data, int argc, char **argv);
 int					delete_data(t_data *philo_data);

@@ -46,8 +46,12 @@ void	take_forks(t_philo *philo)
 {
 	int return_value;
 	int i;
+	int right_taken;
+	int left_taken;
 
 	i = -1;
+	right_taken = 0;
+	left_taken = 0;
 	while (++i < 2)
 	{
 		if (i == 0)
@@ -56,10 +60,18 @@ void	take_forks(t_philo *philo)
 			return_value = pthread_mutex_lock(philo->right_fork);
 		if (return_value == 0)
 		{
+			if (i == 0)
+				left_taken = 1;
+			else
+				right_taken = 1;
 			philo->nb_forks_taken++;
 			print_state(philo->num, HAS_TAKEN_FORK);
 		}
 	}
+	if (!left_taken)
+		pthread_mutex_unlock(philo->right_fork);
+	if (!right_taken)
+		pthread_mutex_unlock(philo->left_fork);
 }
 
 void	leave_forks(t_philo *philo)
