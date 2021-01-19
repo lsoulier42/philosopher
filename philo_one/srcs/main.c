@@ -18,7 +18,7 @@ int main(int argc, char **argv)
 
 	if (argc >= MIN_NB_ARGS && argc <= MAX_NB_ARGS)
 	{
-		if (!check_arg(argc, argv))
+		if (!check_args(argc, argv))
 			return (EXIT_FAILURE);
 		if (!init_data(&philo_data, argc, argv))
 			return (EXIT_FAILURE);
@@ -26,9 +26,8 @@ int main(int argc, char **argv)
 			|| (philo_data.nb_meal_max != UNLIMITED_MEAL
 			&& philo_data.nb_meal != philo_data. nb_meal_max))
 			if (!philo_loop(&philo_data))
-				return (philo_loop_error(philo_data));
-		free(philo_data.philosophers);
-		free(philo_data.forks);
+				return (delete_data(&philo_data) + EXIT_FAILURE);
+		delete_data(&philo_data);
 	}
 	else
 		return (invalid_arg_nb());

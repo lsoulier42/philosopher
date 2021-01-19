@@ -12,22 +12,12 @@
 
 #include "philo_one.h"
 
-int	init_data(t_data *philo_data, int argc, char **argv)
+int alloc_struct(t_data *philo_data)
 {
-	philo_data->nb_philo = ft_atoi(argv[1]);
-	philo_data->time_to_die = ft_atoi(argv[2]);
-	philo_data->time_to_eat = ft_atoi(argv[3]);
-	philo_data->time_to_sleep = ft_atoi(argv[4]);
-	philo_data->nb_meal = 0;
-	philo_data->nb_meal_max = UNLIMITED_MEAL;
-	if (argc == 6)
-		philo_data->nb_meal_max = ft_atoi(argv[5]);
-	philo_data->nb_forks = philo_data->nb_philo;
 	philo_data->forks = (pthread_mutex_t*)malloc(sizeof(pthread_mutex_t)
 		* (philo_data->nb_forks));
-	if (!philo_data->forks)
+	if (!(philo_data->forks))
 		return (0);
-	philo_data->someone_died = 0;
 	philo_data->philosophers = (t_philo*)malloc(sizeof(t_philo)
 		* philo_data->nb_philo);
 	if (!(philo_data->philosophers))
@@ -35,28 +25,55 @@ int	init_data(t_data *philo_data, int argc, char **argv)
 		free(philo_data->forks);
 		return (0);
 	}
-	if (!init_threads(philo_data, philo_data->philosophers))
-	{
-		free(philo_data->forks);
-		free(philo_data->philosophers);
-		return (0);
-	}
 	return (1);
 }
 
-int	check_arg(int argc, char **argv)
+int	init_struct(t_data *philo_data)
 {
-	int i;
-
-	i = 0;
-	while (++i < argc)
-	{
-		if (!ft_isnum(argv[i]))
-			return (invalid_arg_num(argv[i]));
-		if (argv[i][0] == '-')
-			return (invalid_arg_neg(argv[i]));
-	}
+	if (!init_forks(philo_data->forks, philo_data->nb_forks))
+		return (free_struct(philo_data));
+	if (!init_philosophers(philo_data, philo_data->philosophers))
+		return (free_struct(philo_data));
 	return (1);
 }
 
+int	free_struct(t_data *philo_data)
+{
+	if (philo_data->forks)
+		free(philo_data->forks);
+	if (philo_data->philosophers)
+		free(philo_data->philosophers);
+	return (0);
+}
+
+int	init_data(t_data *philo_data, int argc, char **argv)
+{
+	philo_data->nb_philo = ft_atoi(argv[1]);
+	printf("%d philosophes ont ete crees\n", philo_data->nb_philo);
+	philo_data->time_to_die = ft_atoi(argv[2]);
+	philo_data->time_to_eat = ft_atoi(argv[3]);
+	philo_data->time_to_sleep = ft_atoi(argv[4]);
+	philo_data->nb_meal = 0;
+	philo_data->someone_died = 0;
+	philo_data->nb_meal_max = UNLIMITED_MEAL;
+	if (argc == 6)
+		philo_data->nb_meal_max = ft_atoi(argv[5]);
+	philo_data->nb_forks = philo_data->nb_philo;
+	philo_data->forks = NULL;
+	philo_data->philosophers = NULL;
+	if (!alloc_struct(philo_data))
+		return (0);
+	if (!init_struct(philo_data))
+		return (0);
+	return (1);
+}
+
+int	delete_data(t_data *philo_data)
+{
+	if (philo_data->forks)
+		delete_forks(philo_data->forks, philo_data->nb_forks);
+	if (philo_data->philosophers)
+		delete_philosophers(philo_data->philosophers, philo_data->nb_philo);
+	return (free_struct(philo_data));
+}
 

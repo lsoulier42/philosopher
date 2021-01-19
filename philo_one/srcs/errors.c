@@ -12,6 +12,21 @@
 
 #include "philo_one.h"
 
+int	check_args(int argc, char **argv)
+{
+	int i;
+
+	i = 0;
+	while (++i < argc)
+	{
+		if (!ft_isnum(argv[i]))
+			return (invalid_arg_num(argv[i]));
+		if (argv[i][0] == '-')
+			return (invalid_arg_neg(argv[i]));
+	}
+	return (1);
+}
+
 int		invalid_arg_num(char *arg)
 {
 	printf("Error.\nThis argument is not numeric: `%s'\n", arg);
@@ -32,12 +47,5 @@ int		invalid_arg_nb(void)
 	printf("3. time_to_eat (ms)\n");
 	printf("4. time_to_sleep\n");
 	printf("5. (optional) number_of_time_each_philosophers_must_eat\n");
-	return (EXIT_FAILURE);
-}
-
-int		philo_loop_error(t_data philo_data)
-{
-	free(philo_data.philosophers);
-	free(philo_data.forks);
 	return (EXIT_FAILURE);
 }

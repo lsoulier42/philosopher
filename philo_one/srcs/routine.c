@@ -12,51 +12,45 @@
 
 #include "philo_one.h"
 
-void	take_forks(t_data *philo_data, t_philo *philo, long long timestamp)
-{
-
-}
-
 void	*philo_routine(void *philo_data_void)
 {
+	static int		i = 0;
 	t_data			*philo_data;
 	t_philo			*philo;
-	long long		time_since_last_meal;
-	long long		timestamp;
-	struct timeval	tv;
 
 	philo_data = (t_data*)philo_data_void;
-	philo = &(philo_data->philosophers[philo_data->current_philo - 1]);
-	while (philo->alive)
+	philo = &(philo_data->philosophers[i++]);
+	while (philo->alive && !(philo_data->someone_died))
 	{
-		gettimeofday(&tv, NULL);
-		timestamp = tv.tv_sec * 1000 + tv.tv_usec;
-		if (philo_data->time_to_eat > timestamp - philo->last_eat_date
-			&& philo->state != EAT)
+		if ((philo->last_eat_date == NOT_EATEN_YET
+			|| philo_data->time_to_eat > get_current_timestamp() - philo->last_eat_date)
+			&& philo->state == THINK)
 		{
-			take_forks(philo_data, philo, timestamp);
+			take_forks(philo_data, philo);
 			if (philo->nb_forks_taken == 2)
 			{
 				philo->state = EAT;
-				philo->last_eat_date = timestamp;
+				philo->last_eat_date = get_current_timestamp();
+				print_state(philo->num, philo->state);
+				leave_forks(philo_data, philo);
 			}
 		}
-		else if (philo_data->time_to_sleep > timestamp - philo->last_sleep_date
+		else if ((philo->last_sleep_date == NOT_SLEPT_YET
+			|| philo_data->time_to_sleep > get_current_timestamp() - philo->last_sleep_date)
 			&& philo->state == EAT)
 		{
-			leave_forks(philo_data, philo, timestamp);
 			philo->state = SLEEP;
-			philo->last_sleep_date = timestamp;
+			philo->last_sleep_date = get_current_timestamp();
+			print_state(philo->num, philo->state);
 		}
-		else if (philo->state == SLEEP)
-			philo->state = THINK;
-		time_since_last_meal = timestamp - philo->last_eat_date;
-		if (time_since_last_meal > philo_data->time_to_die)
+		else
 		{
-			philo->alive = 0;
-			philo_data->someone_died = 1;
+			philo->state = THINK;
+			print_state(philo->num, philo->state);
 		}
-		print_state(philo, timestamp);
+		if (philo->last_eat_date != NOT_EATEN_YET
+			&& get_current_timestamp() - philo->last_eat_date > philo_data->time_to_die)
+			philo->alive = 0;
 	}
 	return (NULL);
 }

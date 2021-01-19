@@ -24,12 +24,20 @@
 # define NOT_EATEN_YET -1
 # define NOT_SLEPT_YET -1
 
+typedef enum		e_fork_id
+{
+	LEFT,
+	RIGHT
+}					t_fork_id;
+
 typedef enum		e_philo_state
 {
+	NONE,
 	EAT,
 	SLEEP,
 	THINK,
-	NONE
+	HAS_TAKEN_FORK,
+	DIED
 }					t_philo_state;
 
 typedef struct		s_philo
@@ -54,22 +62,39 @@ typedef struct		s_data
 	pthread_mutex_t	*forks;
 	int				nb_meal;
 	int 			someone_died;
-	int 			current_philo;
-	t_philo	*philosophers;
+	t_philo			*philosophers;
 }					t_data;
 
 int					init_data(t_data *philo_data, int argc, char **argv);
+int					delete_data(t_data *philo_data);
+int 				alloc_struct(t_data *philo_data);
+int					free_struct(t_data *philo_data);
+int					init_struct(t_data *philo_data);
+
+int					check_args(int argc, char **argv);
 int					invalid_arg_nb(void);
 int					invalid_arg_num(char *arg);
 int					invalid_arg_neg(char *arg);
 int					ft_atoi(const char *str);
 int					ft_isspace(char c);
-int					check_arg(int argc, char **argv);
 int					ft_isnum(char *str);
 int					ft_isdigit(int c);
+
 int					philo_loop(t_data *philo_data);
-int					philo_loop_error(t_data philo_data);
-int					init_threads(t_data *philo_data, t_philo *philosophers);
+
+int					init_philosophers(t_data *philo_data, t_philo *philosophers);
+void				set_philo(t_philo *philosopher, pthread_t cur_tid);
+int					delete_philosophers(t_philo *philosophers, int nb_philo);
+
 void				*philo_routine(void *philo_data_void);
+
+int					init_forks(pthread_mutex_t *forks, int nb_forks);
+int					delete_forks(pthread_mutex_t *forks, int nb_forks);
+void 				get_fork_id(int nb_philo, int philo_num, int fork[][2]);
+void				take_forks(t_data *philo_data, t_philo *philo);
+void				leave_forks(t_data *philo_data, t_philo *philo);
+
+long long			get_current_timestamp(void);
+void				print_state(int num, char state);
 
 #endif
