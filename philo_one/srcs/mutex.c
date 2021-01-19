@@ -12,55 +12,48 @@
 
 #include "philo_one.h"
 
-int	init_forks(pthread_mutex_t *forks, int nb_forks)
+int	init_forks(t_data *philo_data)
 {
-	int					i;
-	int					return_value;
+	int	i;
+	int	return_value;
 
 	i = -1;
-	while (++i < nb_forks)
+	while (++i < philo_data->nb_philo)
 	{
-		return_value = pthread_mutex_init(&(forks[i]), NULL);
+		return_value = pthread_mutex_init(&(philo_data->forks[i]), NULL);
 		if (return_value == -1)
 			return (0);
 	}
 	return (1);
 }
 
-int delete_forks(pthread_mutex_t *forks, int nb_forks)
+int delete_forks(t_data *philo_data)
 {
 	int i;
 	int	return_value;
 
 	i = -1;
-	while (++i < nb_forks)
+	while (++i < philo_data->nb_philo)
 	{
-		return_value = pthread_mutex_destroy(&(forks[i]));
+		return_value = pthread_mutex_destroy(&(philo_data->forks[i]));
 		if (return_value == -1)
 			return (0);
 	}
 	return (1);
 }
 
-void 	get_fork_id(int nb_philo, int philo_num, int fork[][2])
+void	take_forks(t_philo *philo)
 {
-	(*fork)[LEFT] = philo_num - 1;
-	(*fork)[RIGHT] = philo_num - 2;
-	if ((*fork)[RIGHT] == -1)
-		(*fork)[RIGHT] = nb_philo - 1;
-}
-
-void	take_forks(t_data *philo_data, t_philo *philo)
-{
-	int forks_id[2];
 	int return_value;
 	int i;
 
 	i = -1;
-	get_fork_id(philo_data->nb_philo, philo->num, &forks_id);
 	while (++i < 2)
 	{
-		return_value = pthread_mutex_lock(&(philo_data->forks[forks_id[i]]));
+		if (i == 0)
+			return_value = pthread_mutex_lock(philo->left_fork);
+		else
+			return_value = pthread_mutex_lock(philo->right_fork);
 		if (return_value == 0)
 		{
 			philo->nb_forks_taken++;
@@ -69,17 +62,18 @@ void	take_forks(t_data *philo_data, t_philo *philo)
 	}
 }
 
-void	leave_forks(t_data *philo_data, t_philo *philo)
+void	leave_forks(t_philo *philo)
 {
-	int forks_id[2];
 	int return_value;
 	int i;
 
 	i = -1;
-	get_fork_id(philo_data->nb_philo, philo->num, &forks_id);
 	while (++i < 2)
 	{
-		return_value = pthread_mutex_unlock(&(philo_data->forks[forks_id[i]]));
+		if (i == 0)
+			return_value = pthread_mutex_unlock(philo->left_fork);
+		else
+			return_value = pthread_mutex_unlock(philo->right_fork);
 		if (return_value != -1)
 			philo->nb_forks_taken--;
 	}

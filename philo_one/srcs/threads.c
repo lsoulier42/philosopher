@@ -12,20 +12,32 @@
 
 #include "philo_one.h"
 
-void set_philo(t_philo *philosopher, pthread_t cur_tid)
+void	init_philosophers(t_data *philo_data)
 {
-	static int cur_num = 1;
+	int			i;
+	t_philo 	*philo;
 
-	philosopher->alive = 1;
-	philosopher->num = cur_num++;
-	philosopher->tid = cur_tid;
-	philosopher->nb_forks_taken = 0;
-	philosopher->state = THINK;
-	philosopher->last_eat_date = NOT_EATEN_YET;
-	philosopher->last_sleep_date = NOT_SLEPT_YET;
+	i = -1;
+	while (++i < philo_data->nb_philo)
+	{
+		philo = &(philo_data->philosophers[i]);
+		philo->state = NONE;
+		philo->num = i + 1;
+		philo->nb_forks_taken = 0;
+		philo->last_eat_date = NOT_EATEN_YET;
+		philo->last_sleep_date = NOT_EATEN_YET;
+		philo->time_to_die = philo_data->time_to_die;
+		philo->time_to_sleep = philo_data->time_to_sleep;
+		philo->time_to_eat = philo_data->time_to_eat;
+		philo->left_fork = &(philo_data->forks[i]);
+		if (i - 1 == -1)
+			philo->right_fork = &(philo_data->forks[philo_data->nb_philo - 1]);
+		else
+			philo->right_fork = &(philo_data->forks[i - 1]);
+	}
 }
 
-int init_philosophers(t_data *philo_data, t_philo *philosophers)
+int	load_threads(t_data *philo_data)
 {
 	pthread_t	cur_thread;
 	int			i;
@@ -35,16 +47,15 @@ int init_philosophers(t_data *philo_data, t_philo *philosophers)
 	while (++i < philo_data->nb_philo)
 	{
 		create_return = pthread_create(&cur_thread, NULL,
-			&philo_routine, philo_data);
+			&philo_routine, &(philo_data->philosophers[i]));
 		if (create_return == -1)
 			return (0);
-		set_philo(&(philo_data->philosophers[i]), cur_thread);
-		usleep(10);
+		philo_data->threads[i] = cur_thread;
 	}
 	return (1);
 }
 
-int	delete_philosophers(t_philo *philosophers, int nb_philo)
+int	delete_philosophers(t_data *philo_data)
 {
 	int i;
 	int return_value;
@@ -52,13 +63,14 @@ int	delete_philosophers(t_philo *philosophers, int nb_philo)
 
 	i = -1;
 	error = 0;
-	while (++i < nb_philo)
+	while (++i < philo_data->nb_philo)
 	{
-		return_value = pthread_detach(philosophers[i].tid);
+		return_value = pthread_detach(philo_data->threads[i]);
 		if (return_value == -1)
 		{
 			error = 1;
-			printf("Error.\nThis thread with tid %ld cannot be detached\n", (long)philosophers[i].tid);
+			printf("Error.\nThis thread with tid %ld cannot be detached\n",\
+				(long)philo_data->threads[i]);
 		}
 	}
 	return (error == 0);

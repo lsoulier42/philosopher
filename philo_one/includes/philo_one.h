@@ -37,18 +37,21 @@ typedef enum		e_philo_state
 	SLEEP,
 	THINK,
 	HAS_TAKEN_FORK,
-	DIED
+	DEAD
 }					t_philo_state;
 
 typedef struct		s_philo
 {
-	pthread_t	tid;
-	int			num;
-	char		state;
-	char		alive;
-	char		nb_forks_taken;
-	long long	last_eat_date;
-	long long	last_sleep_date;
+	pthread_mutex_t	*left_fork;
+	pthread_mutex_t *right_fork;
+	int				num;
+	char			state;
+	char			nb_forks_taken;
+	long long		last_eat_date;
+	long long		last_sleep_date;
+	int				time_to_die;
+	int				time_to_eat;
+	int				time_to_sleep;
 }					t_philo;
 
 typedef struct		s_data
@@ -58,12 +61,13 @@ typedef struct		s_data
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				nb_meal_max;
-	int 			nb_forks;
+	int				nb_meal_taken;
 	pthread_mutex_t	*forks;
-	int				nb_meal;
-	int 			someone_died;
-	t_philo			*philosophers;
+	pthread_t 		*threads;
+	t_philo 		*philosophers;
 }					t_data;
+
+extern int			g_someone_died;
 
 int					init_data(t_data *philo_data, int argc, char **argv);
 int					delete_data(t_data *philo_data);
@@ -82,17 +86,16 @@ int					ft_isdigit(int c);
 
 int					philo_loop(t_data *philo_data);
 
-int					init_philosophers(t_data *philo_data, t_philo *philosophers);
-void				set_philo(t_philo *philosopher, pthread_t cur_tid);
-int					delete_philosophers(t_philo *philosophers, int nb_philo);
+void				init_philosophers(t_data *philo_data);
+int					load_threads(t_data *philo_data);
+int					delete_philosophers(t_data *philo_data);
 
 void				*philo_routine(void *philo_data_void);
 
-int					init_forks(pthread_mutex_t *forks, int nb_forks);
-int					delete_forks(pthread_mutex_t *forks, int nb_forks);
-void 				get_fork_id(int nb_philo, int philo_num, int fork[][2]);
-void				take_forks(t_data *philo_data, t_philo *philo);
-void				leave_forks(t_data *philo_data, t_philo *philo);
+int					init_forks(t_data *philo_data);
+int 				delete_forks(t_data *philo_data);
+void				take_forks(t_philo *philo);
+void				leave_forks(t_philo *philo);
 
 long long			get_current_timestamp(void);
 void				print_state(int num, char state);

@@ -31,7 +31,7 @@ void		print_state(int num, char state)
 		output = "is sleeping";
 	else if (state == THINK)
 		output = "is thinking";
-	else if (state == DIED)
+	else if (state == DEAD)
 		output = "died";
 	else if (state == HAS_TAKEN_FORK)
 		output = "has taken a fork";
@@ -40,5 +40,3 @@ void		print_state(int num, char state)
 		num,
 		output);
 }
-
-

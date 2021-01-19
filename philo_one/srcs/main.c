@@ -12,9 +12,12 @@
 
 #include "philo_one.h"
 
+int			g_someone_died = 0;
+
 int main(int argc, char **argv)
 {
-	t_data philo_data;
+	t_data			philo_data;
+	int i = -1;
 
 	if (argc >= MIN_NB_ARGS && argc <= MAX_NB_ARGS)
 	{
@@ -22,9 +25,9 @@ int main(int argc, char **argv)
 			return (EXIT_FAILURE);
 		if (!init_data(&philo_data, argc, argv))
 			return (EXIT_FAILURE);
-		while (!philo_data.someone_died
-			|| (philo_data.nb_meal_max != UNLIMITED_MEAL
-			&& philo_data.nb_meal != philo_data. nb_meal_max))
+		if (!load_threads(&philo_data))
+			return (delete_data(&philo_data) + EXIT_FAILURE);
+		while (!(g_someone_died))
 			if (!philo_loop(&philo_data))
 				return (delete_data(&philo_data) + EXIT_FAILURE);
 		delete_data(&philo_data);

@@ -19,10 +19,9 @@ int	philo_loop(t_data *philo_data)
 	i = -1;
 	while (++i < philo_data->nb_philo)
 	{
-		if (!(philo_data->philosophers[i].alive))
+		if (philo_data->philosophers[i].state == DEAD)
 		{
-			philo_data->someone_died = 1;
-			print_state(philo_data->philosophers[i].num, DIED);
+			print_state(philo_data->philosophers[i].num, DEAD);
 			break ;
 		}
 	}
