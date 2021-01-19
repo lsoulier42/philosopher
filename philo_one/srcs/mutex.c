@@ -69,9 +69,15 @@ void	take_forks(t_philo *philo)
 		}
 	}
 	if (!left_taken)
+	{
 		pthread_mutex_unlock(philo->right_fork);
+		philo->nb_forks_taken--;
+	}
 	if (!right_taken)
+	{
 		pthread_mutex_unlock(philo->left_fork);
+		philo->nb_forks_taken--;
+	}
 }
 
 void	leave_forks(t_philo *philo)
