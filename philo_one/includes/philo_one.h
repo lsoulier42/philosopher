@@ -46,7 +46,7 @@ typedef enum		e_philo_state
 typedef struct		s_fork
 {
 	pthread_mutex_t mutex_id;
-	char 			state;
+	char			state;
 }					t_fork;
 
 typedef struct		s_philo
@@ -56,29 +56,29 @@ typedef struct		s_philo
 	long			last_eat_date;
 	long			last_sleep_date;
 	int				time_to_die;
-	int 			time_to_eat;
-	int 			time_to_sleep;
+	int				time_to_eat;
+	int				time_to_sleep;
 	int				nb_meal_max;
 	long			start_ts;
-	t_fork 			*forks[2];
+	t_fork			*forks[2];
 }					t_philo;
 
 typedef struct		s_data
 {
 	int				nb_philo;
 	int				time_to_die;
-	int 			time_to_eat;
-	int 			time_to_sleep;
+	int				time_to_eat;
+	int				time_to_sleep;
 	int				nb_meal_max;
-	long 			start_ts;
-	t_fork 			*forks;
-	pthread_t 		*threads;
-	t_philo 		*philosophers;
+	long			start_ts;
+	t_fork			*forks;
+	pthread_t		*threads;
+	t_philo			*philosophers;
 }					t_data;
 
 int					init_data(t_data *philo_data, int argc, char **argv);
 int					delete_data(t_data *philo_data);
-int 				alloc_struct(t_data *philo_data);
+int					alloc_struct(t_data *philo_data);
 int					free_struct(t_data *philo_data);
 int					init_struct(t_data *philo_data);
 
@@ -98,13 +98,13 @@ int					load_threads(t_data *philo_data);
 int					delete_philosophers(t_data *philo_data);
 
 void				*philo_routine(void *philo_data_void);
-void 				routine_eat(t_philo *philo, long ts);
-void 				routine_sleep(t_philo *philo, long ts);
+void				routine_eat(t_philo *philo, long ts);
+void				routine_sleep(t_philo *philo, long ts);
 
 int					init_forks(t_data *philo_data);
-int 				delete_forks(t_data *philo_data);
-int 				leave_forks(t_philo *philo);
-int					take_a_fork(t_philo *philo, char side_id);
+int					delete_forks(t_data *philo_data);
+int					leave_forks(t_philo *philo);
+int					take_a_fork(t_philo *philo, int side_id);
 
 long				get_timestamp(void);
 void				print_state(long ts, int num, char state);

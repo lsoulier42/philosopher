@@ -12,9 +12,9 @@
 
 #include "philo_one.h"
 
-int main(int argc, char **argv)
+int	main(int argc, char **argv)
 {
-	t_data			philo_data;
+	t_data	philo_data;
 
 	if (argc >= MIN_NB_ARGS && argc <= MAX_NB_ARGS)
 	{
@@ -27,7 +27,7 @@ int main(int argc, char **argv)
 		while (1)
 		{
 			if (!philo_loop(&philo_data))
-				break;
+				break ;
 		}
 		delete_data(&philo_data);
 	}

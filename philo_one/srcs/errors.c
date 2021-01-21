@@ -27,19 +27,19 @@ int	check_args(int argc, char **argv)
 	return (1);
 }
 
-int		invalid_arg_num(char *arg)
+int	invalid_arg_num(char *arg)
 {
 	printf("Error.\nThis argument is not numeric: `%s'\n", arg);
 	return (0);
 }
 
-int		invalid_arg_neg(char *arg)
+int	invalid_arg_neg(char *arg)
 {
 	printf("Error.\nThis argument is not negative: `%s'\n", arg);
 	return (0);
 }
 
-int		invalid_arg_nb(void)
+int	invalid_arg_nb(void)
 {
 	printf("Error.\nInvalid number of arguments :\n");
 	printf("1. number_of_philosopher\n");

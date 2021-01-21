@@ -12,7 +12,7 @@
 
 #include "philo_one.h"
 
-int alloc_struct(t_data *philo_data)
+int	alloc_struct(t_data *philo_data)
 {
 	int nb_forks;
 
@@ -81,4 +81,3 @@ int	delete_data(t_data *philo_data)
 		delete_philosophers(philo_data);
 	return (free_struct(philo_data));
 }
-
