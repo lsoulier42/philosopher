@@ -15,54 +15,51 @@
 void 	philo_routine_think(t_philo *philo)
 {
 	philo->state = THINK;
-	print_state(philo->num, philo->state);
 }
 
-void 	philo_routine_sleep(t_philo *philo)
+void 	philo_routine_sleep(t_philo *philo, long ts)
 {
+	leave_forks(philo);
 	philo->state = SLEEP;
-	philo->last_sleep_date = get_current_timestamp();
-	print_state(philo->num, philo->state);
+	philo->last_sleep_date = ts;
+	print_state(ts, philo->num, philo->state);
 }
 
-void 	philo_routine_eat(t_philo *philo)
+void 	philo_routine_eat(t_philo *philo, long ts)
 {
-	take_forks(philo);
-	if (philo->nb_forks_taken == 2)
+	if (take_forks(philo))
 	{
 		philo->state = EAT;
-		philo->last_eat_date = get_current_timestamp();
+		philo->last_eat_date = ts;
 		*(philo->meal_taken_ptr) += 1;
-		print_state(philo->num, philo->state);
-		leave_forks(philo);
+		print_state(ts, philo->num, philo->state);
 	}
+	else
+		usleep(philo->num * 1000);
 }
 
 void	*philo_routine(void *philo_void)
 {
 	t_philo	*philo;
+	long	ts;
 
 	philo = (t_philo*)philo_void;
-	while (!(*(philo->someone_died_ptr))
-		&& (*(philo->meal_taken_ptr) < philo->nb_meal_max
-		|| philo->nb_meal_max == UNLIMITED_MEAL))
+	while (philo->state != DEAD)
 	{
-		if ((philo->last_eat_date == NOT_EATEN_YET
-			|| philo->time_to_eat > get_current_timestamp() - philo->last_eat_date)
-			&& (philo->state == THINK || philo->state == NONE))
-			philo_routine_eat(philo);
-		else if ((philo->last_sleep_date == NOT_SLEPT_YET
-			|| philo->time_to_sleep > get_current_timestamp() - philo->last_sleep_date)
-			&& (philo->state == EAT || philo->state == NONE))
-			philo_routine_sleep(philo);
-		else if ((philo->state == SLEEP || philo->state == NONE))
-			philo_routine_think(philo);
-		if (philo->last_eat_date != NOT_EATEN_YET
-			&& get_current_timestamp() - philo->last_eat_date > philo->time_to_die)
+		ts = get_timestamp() - philo->start_ts;
+		if (ts - philo->last_eat_date > philo->time_to_die)
 		{
 			philo->state = DEAD;
-			*(philo->someone_died_ptr) = 1;
 		}
+		/*if (philo->time_to_eat < ts - philo->last_eat_date && philo->state == THINK)
+			philo_routine_eat(philo, ts);
+		else if (philo->time_to_sleep < ts - philo->last_sleep_date && philo->state == EAT)
+			philo_routine_sleep(philo, ts);
+		else if (philo->state == SLEEP)
+		{
+			philo_routine_think(philo);
+			print_state(ts, philo->num, philo->state);
+		}*/
 	}
 	return (NULL);
 }

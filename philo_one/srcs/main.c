@@ -15,7 +15,6 @@
 int main(int argc, char **argv)
 {
 	t_data			philo_data;
-	int i = -1;
 
 	if (argc >= MIN_NB_ARGS && argc <= MAX_NB_ARGS)
 	{
@@ -25,11 +24,11 @@ int main(int argc, char **argv)
 			return (EXIT_FAILURE);
 		if (!load_threads(&philo_data))
 			return (delete_data(&philo_data) + EXIT_FAILURE);
-		while (!(philo_data.someone_died)
-			&& (philo_data.nb_meal_taken < philo_data.nb_meal_max
-			|| philo_data.nb_meal_max == UNLIMITED_MEAL))
+		while (1)
+		{
 			if (!philo_loop(&philo_data))
-				return (delete_data(&philo_data) + EXIT_FAILURE);
+				break;
+		}
 		delete_data(&philo_data);
 	}
 	else

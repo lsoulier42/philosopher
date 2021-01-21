@@ -42,57 +42,35 @@ int delete_forks(t_data *philo_data)
 	return (1);
 }
 
-void	take_forks(t_philo *philo)
+int take_forks(t_philo *philo)
 {
-	int return_value;
-	int i;
-	int right_taken;
-	int left_taken;
-
-	i = -1;
-	right_taken = 0;
-	left_taken = 0;
-	while (++i < 2)
+	if (philo->left_locked || philo->right_locked)
 	{
-		if (i == 0)
-			return_value = pthread_mutex_lock(philo->left_fork);
-		else
-			return_value = pthread_mutex_lock(philo->right_fork);
-		if (return_value == 0)
-		{
-			if (i == 0)
-				left_taken = 1;
-			else
-				right_taken = 1;
-			philo->nb_forks_taken++;
-			print_state(philo->num, HAS_TAKEN_FORK);
-		}
+		leave_forks(philo);
+		return (0);
 	}
-	if (!left_taken)
+	if (pthread_mutex_lock(philo->left_fork) != 0)
 	{
-		pthread_mutex_unlock(philo->right_fork);
-		philo->nb_forks_taken--;
+		leave_forks(philo);
+		return (0);
 	}
-	if (!right_taken)
+	philo->left_locked = 1;
+	print_state(get_timestamp() - philo->start_ts, philo->num, HAS_TAKEN_FORK);
+	if (pthread_mutex_lock(philo->right_fork) != 0)
 	{
-		pthread_mutex_unlock(philo->left_fork);
-		philo->nb_forks_taken--;
+		leave_forks(philo);
+		return (0);
 	}
+	philo->right_locked = 1;
+	print_state(get_timestamp() - philo->start_ts, philo->num, HAS_TAKEN_FORK);
+	return (1);
 }
 
-void	leave_forks(t_philo *philo)
+int leave_forks(t_philo *philo)
 {
-	int return_value;
-	int i;
-
-	i = -1;
-	while (++i < 2)
-	{
-		if (i == 0)
-			return_value = pthread_mutex_unlock(philo->left_fork);
-		else
-			return_value = pthread_mutex_unlock(philo->right_fork);
-		if (return_value != -1)
-			philo->nb_forks_taken--;
-	}
+	pthread_mutex_unlock(philo->left_fork);
+	philo->left_locked = 0;
+	pthread_mutex_unlock(philo->right_fork);
+	philo->right_locked = 0;
+	return (1);
 }

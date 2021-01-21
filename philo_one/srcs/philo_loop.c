@@ -21,8 +21,9 @@ int	philo_loop(t_data *philo_data)
 	{
 		if (philo_data->philosophers[i].state == DEAD)
 		{
-			print_state(philo_data->philosophers[i].num, DEAD);
-			break ;
+			print_state(get_timestamp() - philo_data->start_ts,
+			   philo_data->philosophers[i].num, DEAD);
+			return (0);
 		}
 	}
 	return (1);

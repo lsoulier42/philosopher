@@ -21,11 +21,13 @@ void	init_philosophers(t_data *philo_data)
 	while (++i < philo_data->nb_philo)
 	{
 		philo = &(philo_data->philosophers[i]);
-		philo->state = NONE;
+		philo->state = i % 3;
 		philo->num = i + 1;
-		philo->nb_forks_taken = 0;
-		philo->last_eat_date = NOT_EATEN_YET;
-		philo->last_sleep_date = NOT_EATEN_YET;
+		philo->last_eat_date = 0;
+		philo->last_sleep_date = 0;
+		philo->left_locked = 0;
+		philo->right_locked = 0;
+		philo->start_ts = philo_data->start_ts;
 		philo->time_to_die = philo_data->time_to_die;
 		philo->time_to_sleep = philo_data->time_to_sleep;
 		philo->time_to_eat = philo_data->time_to_eat;
