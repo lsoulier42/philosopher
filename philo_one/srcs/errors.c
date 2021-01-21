@@ -21,7 +21,7 @@ int	check_args(int argc, char **argv)
 	{
 		if (!ft_isnum(argv[i]))
 			return (invalid_arg_num(argv[i]));
-		if (argv[i][0] == '-')
+		if (argv[i][0] == '-' || argv[i][0] == '0')
 			return (invalid_arg_neg(argv[i]));
 	}
 	return (1);

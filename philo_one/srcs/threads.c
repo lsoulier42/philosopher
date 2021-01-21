@@ -16,29 +16,32 @@ void	init_philosophers(t_data *philo_data)
 {
 	int			i;
 	t_philo 	*philo;
+	int 		right_fork_id;
+	int 		left_fork_id;
 
 	i = -1;
 	while (++i < philo_data->nb_philo)
 	{
 		philo = &(philo_data->philosophers[i]);
-		philo->state = i % 3;
+		philo->state = SLEEP;
 		philo->num = i + 1;
 		philo->last_eat_date = 0;
 		philo->last_sleep_date = 0;
-		philo->left_locked = 0;
-		philo->right_locked = 0;
 		philo->start_ts = philo_data->start_ts;
 		philo->time_to_die = philo_data->time_to_die;
 		philo->time_to_sleep = philo_data->time_to_sleep;
 		philo->time_to_eat = philo_data->time_to_eat;
 		philo->nb_meal_max = philo_data->nb_meal_max;
-		philo->meal_taken_ptr = &(philo_data->nb_meal_taken);
-		philo->someone_died_ptr = &(philo_data->someone_died);
-		philo->left_fork = &(philo_data->forks[i]);
-		if (i - 1 == -1)
-			philo->right_fork = &(philo_data->forks[philo_data->nb_philo - 1]);
-		else
-			philo->right_fork = &(philo_data->forks[i - 1]);
+		left_fork_id = i;
+		right_fork_id = i - 1;
+		if (right_fork_id == -1)
+		{
+			right_fork_id = philo_data->nb_philo - 1;
+			if (philo_data->nb_philo == 1)
+				right_fork_id = 1;
+		}
+		philo->forks[LEFT] = &(philo_data->forks[left_fork_id]);
+		philo->forks[RIGHT] = &(philo_data->forks[right_fork_id]);
 	}
 }
 

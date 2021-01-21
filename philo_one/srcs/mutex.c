@@ -14,63 +14,69 @@
 
 int	init_forks(t_data *philo_data)
 {
-	int	i;
-	int	return_value;
+	int		i;
+	int		return_value;
+	int 	nb_forks;
+	t_fork	*fork;
 
 	i = -1;
-	while (++i < philo_data->nb_philo)
+	nb_forks = philo_data->nb_philo;
+	if (philo_data->nb_philo == 1)
+		nb_forks = 2;
+	while (++i < nb_forks)
 	{
-		return_value = pthread_mutex_init(&(philo_data->forks[i]), NULL);
+		fork = philo_data->forks + i;
+		return_value = pthread_mutex_init(&(fork->mutex_id), NULL);
 		if (return_value == -1)
 			return (0);
+		fork->state = UNLOCKED;
 	}
 	return (1);
+}
+
+int		take_a_fork(t_philo *philo, char side_id)
+{
+	char fork_taken;
+
+	fork_taken = 0;
+	if (philo->forks[side_id]->state == UNLOCKED)
+	{
+		fork_taken = pthread_mutex_lock(&(philo->forks[side_id]->mutex_id)) == 0;
+		if (fork_taken)
+		{
+			philo->forks[side_id]->state = LOCKED;
+			print_state(get_timestamp() - philo->start_ts, philo->num, HAS_FORKS);
+		}
+	}
+	return (fork_taken);
 }
 
 int delete_forks(t_data *philo_data)
 {
 	int i;
 	int	return_value;
+	int nb_forks;
+	t_fork	*fork;
 
 	i = -1;
-	while (++i < philo_data->nb_philo)
+	nb_forks = philo_data->nb_philo;
+	if (philo_data->nb_philo == 1)
+		nb_forks = 2;
+	while (++i < nb_forks)
 	{
-		return_value = pthread_mutex_destroy(&(philo_data->forks[i]));
+		fork = philo_data->forks + i;
+		return_value = pthread_mutex_destroy(&(fork->mutex_id));
 		if (return_value == -1)
 			return (0);
 	}
 	return (1);
 }
 
-int take_forks(t_philo *philo)
-{
-	if (philo->left_locked || philo->right_locked)
-	{
-		leave_forks(philo);
-		return (0);
-	}
-	if (pthread_mutex_lock(philo->left_fork) != 0)
-	{
-		leave_forks(philo);
-		return (0);
-	}
-	philo->left_locked = 1;
-	print_state(get_timestamp() - philo->start_ts, philo->num, HAS_TAKEN_FORK);
-	if (pthread_mutex_lock(philo->right_fork) != 0)
-	{
-		leave_forks(philo);
-		return (0);
-	}
-	philo->right_locked = 1;
-	print_state(get_timestamp() - philo->start_ts, philo->num, HAS_TAKEN_FORK);
-	return (1);
-}
-
 int leave_forks(t_philo *philo)
 {
-	pthread_mutex_unlock(philo->left_fork);
-	philo->left_locked = 0;
-	pthread_mutex_unlock(philo->right_fork);
-	philo->right_locked = 0;
+	pthread_mutex_unlock(&(philo->forks[LEFT]->mutex_id));
+	philo->forks[LEFT]->state = UNLOCKED;
+	pthread_mutex_unlock(&(philo->forks[RIGHT]->mutex_id));
+	philo->forks[RIGHT]->state = UNLOCKED;
 	return (1);
 }

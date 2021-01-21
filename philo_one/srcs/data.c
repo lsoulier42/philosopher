@@ -14,8 +14,12 @@
 
 int alloc_struct(t_data *philo_data)
 {
-	philo_data->forks = (pthread_mutex_t*)malloc(sizeof(pthread_mutex_t)
-		* philo_data->nb_philo);
+	int nb_forks;
+
+	nb_forks = philo_data->nb_philo;
+	if (philo_data->nb_philo == 1)
+		nb_forks = 2;
+	philo_data->forks = (t_fork*)malloc(sizeof(t_fork) * nb_forks);
 	if (!(philo_data->forks))
 		return (0);
 	philo_data->threads = (pthread_t*)malloc(sizeof(pthread_t)
@@ -55,8 +59,6 @@ int	init_data(t_data *philo_data, int argc, char **argv)
 	philo_data->time_to_die = ft_atoi(argv[2]);
 	philo_data->time_to_eat = ft_atoi(argv[3]);
 	philo_data->time_to_sleep = ft_atoi(argv[4]);
-	philo_data->nb_meal_taken = 0;
-	philo_data->someone_died = 0;
 	philo_data->start_ts = get_timestamp();
 	philo_data->nb_meal_max = UNLIMITED_MEAL;
 	if (argc == 6)

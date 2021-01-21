@@ -22,23 +22,35 @@
 # define MIN_NB_ARGS 5
 # define MAX_NB_ARGS 6
 
+typedef enum		e_fork_status
+{
+	UNLOCKED,
+	LOCKED
+}					t_fork_status;
+
+typedef enum		e_fork_side
+{
+	LEFT,
+	RIGHT
+}					t_fork_side;
+
 typedef enum		e_philo_state
 {
 	EAT,
 	SLEEP,
 	THINK,
-	HAS_TAKEN_FORK,
+	HAS_FORKS,
 	DEAD
 }					t_philo_state;
 
+typedef struct		s_fork
+{
+	pthread_mutex_t mutex_id;
+	char 			state;
+}					t_fork;
+
 typedef struct		s_philo
 {
-	pthread_mutex_t	*left_fork;
-	char 			left_locked;
-	pthread_mutex_t *right_fork;
-	char			right_locked;
-	int 			*someone_died_ptr;
-	int 			*meal_taken_ptr;
 	int				num;
 	char			state;
 	long			last_eat_date;
@@ -48,6 +60,7 @@ typedef struct		s_philo
 	int 			time_to_sleep;
 	int				nb_meal_max;
 	long			start_ts;
+	t_fork 			*forks[2];
 }					t_philo;
 
 typedef struct		s_data
@@ -57,10 +70,8 @@ typedef struct		s_data
 	int 			time_to_eat;
 	int 			time_to_sleep;
 	int				nb_meal_max;
-	int 			someone_died;
-	int 			nb_meal_taken;
 	long 			start_ts;
-	pthread_mutex_t	*forks;
+	t_fork 			*forks;
 	pthread_t 		*threads;
 	t_philo 		*philosophers;
 }					t_data;
@@ -87,14 +98,13 @@ int					load_threads(t_data *philo_data);
 int					delete_philosophers(t_data *philo_data);
 
 void				*philo_routine(void *philo_data_void);
-void 				philo_routine_eat(t_philo *philo, long ts);
-void 				philo_routine_sleep(t_philo *philo, long ts);
-void 				philo_routine_think(t_philo *philo);
+void 				routine_eat(t_philo *philo, long ts);
+void 				routine_sleep(t_philo *philo, long ts);
 
 int					init_forks(t_data *philo_data);
 int 				delete_forks(t_data *philo_data);
-int 				take_forks(t_philo *philo);
 int 				leave_forks(t_philo *philo);
+int					take_a_fork(t_philo *philo, char side_id);
 
 long				get_timestamp(void);
 void				print_state(long ts, int num, char state);

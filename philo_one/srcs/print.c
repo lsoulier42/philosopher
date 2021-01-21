@@ -36,7 +36,7 @@ void		print_state(long ts, int num, char state)
 		output = "is thinking";
 	else if (state == DEAD)
 		output = "died";
-	else if (state == HAS_TAKEN_FORK)
+	else if (state == HAS_FORKS)
 		output = "has taken a fork";
 	printf("%ld %d %s\n",
 		ts,
