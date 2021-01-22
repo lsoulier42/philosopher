@@ -6,7 +6,7 @@
 /*   By: lsoulier <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/19 10:05:01 by lsoulier          #+#    #+#             */
-/*   Updated: 2021/01/22 12:42:03 by lsoulier         ###   ########.fr       */
+/*   Updated: 2021/01/22 12:44:56 by lsoulier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ int	invalid_arg_nb(void)
 	printf("1. number_of_philosopher\n");
 	printf("2. time_to_die (ms)\n");
 	printf("3. time_to_eat (ms)\n");
-	printf("4. time_to_sleep\n");
+	printf("4. time_to_sleep (ms)\n");
 	printf("5. (optional) number_of_time_each_philosophers_must_eat\n");
 	return (EXIT_FAILURE);
 }
