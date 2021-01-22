@@ -14,15 +14,14 @@
 
 void	init_philosophers_loop(t_data *philo_data, t_philo *philo, int i)
 {
-	int			right_fork_id;
-	int			left_fork_id;
+	int	right_fork_id;
+	int	left_fork_id;
 
 	philo->state = SLEEP;
 	philo->num = i + 1;
 	philo->last_eat_date = 0;
 	philo->last_sleep_date = 0;
 	philo->start_ts = philo_data->start_ts;
-	philo->time_to_die = philo_data->time_to_die;
 	philo->time_to_sleep = philo_data->time_to_sleep;
 	philo->time_to_eat = philo_data->time_to_eat;
 	philo->nb_meal_max = philo_data->nb_meal_max;

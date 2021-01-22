@@ -77,9 +77,15 @@ int	delete_forks(t_data *philo_data)
 
 int	leave_forks(t_philo *philo)
 {
-	pthread_mutex_unlock(&(philo->forks[LEFT]->mutex_id));
-	philo->forks[LEFT]->state = UNLOCKED;
-	pthread_mutex_unlock(&(philo->forks[RIGHT]->mutex_id));
-	philo->forks[RIGHT]->state = UNLOCKED;
+	if (philo->forks[LEFT]->state == LOCKED)
+	{
+		pthread_mutex_unlock(&(philo->forks[LEFT]->mutex_id));
+		philo->forks[LEFT]->state = UNLOCKED;
+	}
+	if (philo->forks[RIGHT]->state == LOCKED)
+	{
+		pthread_mutex_unlock(&(philo->forks[RIGHT]->mutex_id));
+		philo->forks[RIGHT]->state = UNLOCKED;
+	}
 	return (1);
 }

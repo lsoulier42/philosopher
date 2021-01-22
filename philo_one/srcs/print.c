@@ -15,15 +15,12 @@
 long	get_timestamp(void)
 {
 	struct timeval	tv;
-	long			ms;
 
 	gettimeofday(&tv, NULL);
-	ms = tv.tv_sec * 1000;
-	ms += tv.tv_usec / 1000;
-	return (ms);
+	return ((tv.tv_sec * 1000) + tv.tv_usec / 1000);
 }
 
-void	print_state(long ts, int num, char state)
+void	print_state(int ts, int num, char state)
 {
 	char	*output;
 
@@ -38,5 +35,5 @@ void	print_state(long ts, int num, char state)
 		output = "died";
 	else if (state == HAS_FORKS)
 		output = "has taken a fork";
-	printf("%ld %d %s\n", ts, num, output);
+	printf("%d %d %s\n", ts, num, output);
 }

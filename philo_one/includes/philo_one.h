@@ -53,13 +53,12 @@ typedef struct		s_philo
 {
 	int				num;
 	char			state;
-	long			last_eat_date;
-	long			last_sleep_date;
-	int				time_to_die;
+	int				last_eat_date;
+	int 			last_sleep_date;
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				nb_meal_max;
-	long			start_ts;
+	int 			start_ts;
 	t_fork			*forks[2];
 }					t_philo;
 
@@ -70,7 +69,7 @@ typedef struct		s_data
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				nb_meal_max;
-	long			start_ts;
+	int			start_ts;
 	t_fork			*forks;
 	pthread_t		*threads;
 	t_philo			*philosophers;
@@ -98,8 +97,9 @@ int					load_threads(t_data *philo_data);
 int					delete_philosophers(t_data *philo_data);
 
 void				*philo_routine(void *philo_data_void);
-void				routine_eat(t_philo *philo, long ts);
-void				routine_sleep(t_philo *philo, long ts);
+void				routine_eat(t_philo *philo, int ts);
+void				routine_sleep(t_philo *philo, int ts);
+void				routine_forks(t_philo *philo, int ts);
 
 int					init_forks(t_data *philo_data);
 int					delete_forks(t_data *philo_data);
@@ -107,6 +107,6 @@ int					leave_forks(t_philo *philo);
 int					take_a_fork(t_philo *philo, int side_id);
 
 long				get_timestamp(void);
-void				print_state(long ts, int num, char state);
+void				print_state(int ts, int num, char state);
 
 #endif

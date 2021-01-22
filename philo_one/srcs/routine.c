@@ -12,67 +12,65 @@
 
 #include "philo_one.h"
 
-void	routine_forks(t_philo *philo)
+void	routine_forks(t_philo *philo, int ts)
 {
 	int		first_fork_taken;
 	int		second_fork_taken;
 	int		first_fork_side;
+	int 	second_fork_side;
 
 	first_fork_side = philo->num % 2;
-	first_fork_taken = take_a_fork(philo, first_fork_side);
-	second_fork_taken = take_a_fork(philo, first_fork_side == 0);
-	if (first_fork_taken && second_fork_taken)
-		philo->state = HAS_FORKS;
-	else
-		leave_forks(philo);
+	if (philo->forks[first_fork_side]->state == UNLOCKED)
+	{
+		first_fork_taken = take_a_fork(philo, first_fork_side);
+		second_fork_side = first_fork_side == 0;
+		second_fork_taken = take_a_fork(philo, second_fork_side);
+		if (first_fork_taken && second_fork_taken)
+			philo->state = HAS_FORKS;
+		else
+			leave_forks(philo);
+	}
 }
 
-void	routine_sleep(t_philo *philo, long ts)
+void	routine_sleep(t_philo *philo, int ts)
 {
 	leave_forks(philo);
 	philo->state = SLEEP;
 	philo->last_sleep_date = ts;
+	print_state(ts, philo->num, philo->state);
 }
 
-void	routine_eat(t_philo *philo, long ts)
+void	routine_eat(t_philo *philo, int ts)
 {
 	philo->state = EAT;
 	philo->last_eat_date = ts;
 	philo->nb_meal_max -= 1;
-}
-
-void	philo_routine_loop(t_philo *philo, long ts)
-{
-	if (philo->state != EAT
-		&& (ts - philo->last_eat_date) > philo->time_to_die)
-		philo->state = DEAD;
-	else if (philo->state == THINK)
-		routine_forks(philo);
-	else if (philo->state == HAS_FORKS)
-		routine_eat(philo, ts);
-	else if (philo->state == EAT
-		&& philo->time_to_eat < ts - philo->last_eat_date)
-		routine_sleep(philo, ts);
-	else if (philo->state == SLEEP
-		&& philo->time_to_sleep < ts - philo->last_sleep_date)
-		philo->state = THINK;
+	print_state(ts, philo->num, philo->state);
 }
 
 void	*philo_routine(void *philo_void)
 {
 	t_philo	*philo;
-	long	ts;
-	char	previous_state;
+	int		ts;
 
 	philo = (t_philo*)philo_void;
 	while (philo->state != DEAD && philo->nb_meal_max != 0)
 	{
 		ts = get_timestamp() - philo->start_ts;
-		previous_state = philo->state;
-		philo_routine_loop(philo, ts);
-		if (philo->state != HAS_FORKS && previous_state != philo->state)
+		if (philo->state == THINK)
+			routine_forks(philo, ts);
+		else if (philo->state == HAS_FORKS)
+			routine_eat(philo, ts);
+		else if (philo->state == EAT
+				 && philo->time_to_eat < ts - philo->last_eat_date)
+			routine_sleep(philo, ts);
+		else if (philo->state == SLEEP
+				 && philo->time_to_sleep < ts - philo->last_sleep_date)
+		{
+			philo->state = THINK;
 			print_state(ts, philo->num, philo->state);
-		usleep(ts % 1000);
+		}
+		usleep(100);
 	}
 	return (NULL);
 }
