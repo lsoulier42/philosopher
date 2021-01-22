@@ -5,12 +5,12 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: lsoulier <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/01/19 10:05:01 by lsoulier          #+#    #+#             */
-/*   Updated: 2021/01/22 12:42:03 by lsoulier         ###   ########.fr       */
+/*   Created: 2021/01/22 09:27:26 by lsoulier          #+#    #+#             */
+/*   Updated: 2021/01/22 09:27:37 by lsoulier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo_one.h"
+#include "philo_two.h"
 
 int	check_args(int argc, char **argv)
 {

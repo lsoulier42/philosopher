@@ -1,5 +1,5 @@
 NAME= philo_two
-SRCS= main.c
+SRCS= main.c errors.c data.c utils.c print.c threads.c routine.c semaphores.c philo_loop.c
 OBJS= $(addprefix srcs/,$(SRCS:.c=.o))
 CC= gcc
 CFLAGS= -Wall -Werror -Wextra
@@ -13,6 +13,6 @@ all: $(NAME)
 clean:
 	rm -f $(OBJS)
 fclean: clean
-	rm-f $(NAME)
+	rm -f $(NAME)
 re: fclean all
 .PHONY: all clean fclean re

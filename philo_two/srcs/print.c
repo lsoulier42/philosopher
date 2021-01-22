@@ -1,30 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philo_loop.c                                       :+:      :+:    :+:   */
+/*   print.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lsoulier <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/01/19 10:27:53 by lsoulier          #+#    #+#             */
-/*   Updated: 2021/01/19 10:28:01 by lsoulier         ###   ########.fr       */
+/*   Created: 2021/01/22 09:38:28 by lsoulier          #+#    #+#             */
+/*   Updated: 2021/01/22 09:38:40 by lsoulier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo_one.h"
+#include "philo_two.h"
 
-int	philo_loop(t_data *philo_data)
+void	print_state(long ts, int num, char state)
 {
-	int	i;
-	int is_finish;
+	char	*output;
 
-	i = -1;
-	is_finish = 1;
-	while (++i < philo_data->nb_philo)
-	{
-		if (philo_data->philosophers[i].state == DEAD)
-			return (0);
-		if (philo_data->philosophers[i].nb_meal_max != 0)
-			is_finish = 0;
-	}
-	return (is_finish == 0);
+	output = "";
+	if (state == EAT)
+		output = "is eating";
+	else if (state == SLEEP)
+		output = "is sleeping";
+	else if (state == THINK)
+		output = "is thinking";
+	else if (state == DEAD)
+		output = "died";
+	else if (state == HAS_FORKS)
+		output = "has taken a fork";
+	printf("%ld %d %s\n", ts, num, output);
 }

@@ -5,12 +5,12 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: lsoulier <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/01/19 10:27:53 by lsoulier          #+#    #+#             */
-/*   Updated: 2021/01/19 10:28:01 by lsoulier         ###   ########.fr       */
+/*   Created: 2021/01/22 11:22:06 by lsoulier          #+#    #+#             */
+/*   Updated: 2021/01/22 11:22:33 by lsoulier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo_one.h"
+#include "philo_two.h"
 
 int	philo_loop(t_data *philo_data)
 {
