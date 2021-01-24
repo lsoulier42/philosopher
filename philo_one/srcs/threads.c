@@ -6,7 +6,7 @@
 /*   By: lsoulier <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/19 11:04:54 by lsoulier          #+#    #+#             */
-/*   Updated: 2021/01/19 11:05:02 by lsoulier         ###   ########.fr       */
+/*   Updated: 2021/01/24 19:43:28 by lsoulier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ void	init_philosophers_loop(t_data *philo_data, t_philo *philo, int i)
 	philo->time_to_sleep = philo_data->time_to_sleep;
 	philo->time_to_eat = philo_data->time_to_eat;
 	philo->nb_meal_max = philo_data->nb_meal_max;
+	philo->someone_has_died = &(philo_data->someone_has_died);
 	left_fork_id = i;
 	right_fork_id = i - 1;
 	if (right_fork_id == -1)
@@ -52,18 +53,16 @@ void	init_philosophers(t_data *philo_data)
 
 int		load_threads(t_data *philo_data)
 {
-	pthread_t	cur_thread;
 	int			i;
 	int			create_return;
 
 	i = -1;
 	while (++i < philo_data->nb_philo)
 	{
-		create_return = pthread_create(&cur_thread, NULL,
+		create_return = pthread_create(&(philo_data->threads[i]), NULL,
 			&philo_routine, &(philo_data->philosophers[i]));
 		if (create_return == -1)
 			return (0);
-		philo_data->threads[i] = cur_thread;
 	}
 	return (1);
 }
@@ -78,13 +77,8 @@ int		delete_philosophers(t_data *philo_data)
 	error = 0;
 	while (++i < philo_data->nb_philo)
 	{
-		return_value = pthread_detach(philo_data->threads[i]);
-		if (return_value == -1)
-		{
+		if (pthread_join(philo_data->threads[i], NULL) != 0)
 			error = 1;
-			printf("Error.\nThis thread with tid %ld cannot be detached\n",\
-				(long)philo_data->threads[i]);
-		}
 	}
 	return (error == 0);
 }

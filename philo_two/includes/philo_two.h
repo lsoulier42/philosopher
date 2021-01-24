@@ -19,6 +19,8 @@
 # include <sys/time.h>
 # include <pthread.h>
 # include <semaphore.h>
+# include <fcntl.h>
+# include <sys/stat.h>
 # define UNLIMITED_MEAL -1
 # define MIN_NB_ARGS 5
 # define MAX_NB_ARGS 6
@@ -35,7 +37,7 @@ typedef enum		e_philo_state
 typedef struct		s_fork
 {
 	sem_t			*nb_forks_available;
-	int 			current_nb;
+	sem_t			*can_take_a_fork;
 }					t_fork;
 
 typedef struct		s_philo
@@ -49,6 +51,7 @@ typedef struct		s_philo
 	int				time_to_sleep;
 	int				nb_meal_max;
 	long			start_ts;
+	int				*someone_has_died;
 	t_fork			*forks;
 }					t_philo;
 
@@ -61,6 +64,7 @@ typedef struct		s_data
 	int				time_to_sleep;
 	int				nb_meal_max;
 	long			start_ts;
+	int				someone_has_died;
 	t_fork			forks;
 	pthread_t		*threads;
 	t_philo			*philosophers;
@@ -92,9 +96,10 @@ void				*philo_routine(void *philo_void);
 void				routine_eat(t_philo *philo, long ts);
 void				routine_sleep(t_philo *philo, long ts);
 void				routine_forks(t_philo *philo);
+void				philo_routine_loop(t_philo *philo, int ts);
 
 int					init_forks(t_data *philo_data);
-int 				delete_forks(t_data *philo_data);
+int					delete_forks(t_data *philo_data);
 
 int					philo_loop(t_data *philo_data);
 #endif

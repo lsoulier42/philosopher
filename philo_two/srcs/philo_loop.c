@@ -22,9 +22,13 @@ int	philo_loop(t_data *philo_data)
 	while (++i < philo_data->nb_philo)
 	{
 		if (philo_data->philosophers[i].state == DEAD)
+		{
+			philo_data->someone_has_died = 1;
 			return (0);
+		}
 		if (philo_data->philosophers[i].nb_meal_max != 0)
 			is_finish = 0;
+		usleep(100);
 	}
 	return (is_finish == 0);
 }

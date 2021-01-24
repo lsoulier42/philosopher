@@ -3,7 +3,7 @@ SRCS= main.c data.c ft_atoi.c ft_isspace.c ft_isnum.c ft_isdigit.c errors.c phil
 	threads.c routine.c mutex.c print.c
 OBJS= $(addprefix srcs/,$(SRCS:.c=.o))
 CC= gcc
-CFLAGS=
+CFLAGS= -Wall -Werror -Wextra
 HEADER= -I includes
 LIBS= -lpthread
 
