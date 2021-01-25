@@ -6,7 +6,7 @@
 /*   By: lsoulier <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/19 11:04:54 by lsoulier          #+#    #+#             */
-/*   Updated: 2021/01/24 19:43:28 by lsoulier         ###   ########.fr       */
+/*   Updated: 2021/01/25 10:29:05 by lsoulier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,6 @@ int		load_threads(t_data *philo_data)
 int		delete_philosophers(t_data *philo_data)
 {
 	int	i;
-	int	return_value;
 	int	error;
 
 	i = -1;

@@ -68,6 +68,7 @@ int	delete_forks(t_data *philo_data)
 	while (++i < nb_forks)
 	{
 		fork = philo_data->forks + i;
+		pthread_mutex_unlock(&(fork->mutex_id));
 		return_value = pthread_mutex_destroy(&(fork->mutex_id));
 		if (return_value == -1)
 			return (0);
