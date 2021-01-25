@@ -16,14 +16,10 @@ int	init_forks(t_data *philo_data)
 {
 	int		i;
 	int		return_value;
-	int		nb_forks;
 	t_fork	*fork;
 
 	i = -1;
-	nb_forks = philo_data->nb_philo;
-	if (philo_data->nb_philo == 1)
-		nb_forks = 2;
-	while (++i < nb_forks)
+	while (++i < philo_data->nb_forks)
 	{
 		fork = philo_data->forks + i;
 		return_value = pthread_mutex_init(&(fork->mutex_id), NULL);
@@ -58,14 +54,10 @@ int	delete_forks(t_data *philo_data)
 {
 	int		i;
 	int		return_value;
-	int		nb_forks;
 	t_fork	*fork;
 
 	i = -1;
-	nb_forks = philo_data->nb_philo;
-	if (philo_data->nb_philo == 1)
-		nb_forks = 2;
-	while (++i < nb_forks)
+	while (++i < philo_data->nb_forks)
 	{
 		fork = philo_data->forks + i;
 		pthread_mutex_unlock(&(fork->mutex_id));

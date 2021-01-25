@@ -66,6 +66,7 @@ typedef struct		s_philo
 typedef struct		s_data
 {
 	int				nb_philo;
+	int 			nb_forks;
 	int				time_to_die;
 	int				time_to_eat;
 	int				time_to_sleep;

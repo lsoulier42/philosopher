@@ -1,25 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philo_two.h                                        :+:      :+:    :+:   */
+/*   philo_three.h                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lsoulier <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/01/22 09:16:33 by lsoulier          #+#    #+#             */
-/*   Updated: 2021/01/25 11:00:47 by lsoulier         ###   ########.fr       */
+/*   Created: 2021/01/25 10:51:42 by lsoulier          #+#    #+#             */
+/*   Updated: 2021/01/25 11:02:22 by lsoulier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PHILO_TWO_H
-# define PHILO_TWO_H
-# include <stdio.h>
+#ifndef PHILO_THREE_H
+# define PHILO_THREE_H
 # include <unistd.h>
+# include <stdio.h>
 # include <stdlib.h>
+# include <signal.h>
 # include <sys/time.h>
-# include <pthread.h>
+# include <sys/wait.h>
 # include <semaphore.h>
 # include <fcntl.h>
 # include <sys/stat.h>
+# include <pthread.h>
 # define UNLIMITED_MEAL -1
 # define MIN_NB_ARGS 5
 # define MAX_NB_ARGS 6
@@ -45,12 +47,7 @@ typedef struct		s_philo
 	char			state;
 	long			last_eat_date;
 	long			last_sleep_date;
-	int				time_to_die;
-	int				time_to_eat;
-	int				time_to_sleep;
-	int				nb_meal_max;
-	long			start_ts;
-	int				*someone_has_died;
+	int 			nb_meal_max;
 	t_fork			*forks;
 }					t_philo;
 
@@ -63,9 +60,8 @@ typedef struct		s_data
 	int				time_to_sleep;
 	int				nb_meal_max;
 	long			start_ts;
-	int				someone_has_died;
 	t_fork			forks;
-	pthread_t		*threads;
+	pid_t			*process;
 	t_philo			*philosophers;
 }					t_data;
 
@@ -87,18 +83,17 @@ int					ft_isspace(char c);
 int					ft_atoi(const char *str);
 void				print_state(long ts, int num, char state);
 
-void				init_philosophers(t_data *philo_data);
-int					load_threads(t_data *philo_data);
-int					delete_philosophers(t_data *philo_data);
-
-void				*philo_routine(void *philo_void);
-void				routine_eat(t_philo *philo, long ts);
-void				routine_sleep(t_philo *philo, long ts);
-void				routine_forks(t_philo *philo);
-void				philo_routine_loop(t_philo *philo, int ts);
+int					philo_loop(t_data *philo_data);
 
 int					init_forks(t_data *philo_data);
 int					delete_forks(t_data *philo_data);
 
-int					philo_loop(t_data *philo_data);
+int 				philo_routine(t_data *philo_data, t_philo *philo);
+void				routine_forks(t_data *philo_data, t_philo *philo);
+void				routine_sleep(t_philo *philo, long ts);
+void				routine_eat(t_philo *philo, long ts);
+
+int 				delete_philosophers(t_data *philo_data);
+int 				init_philosophers(t_data *philo_data);
+int 				load_process(t_data *philo_data);
 #endif
