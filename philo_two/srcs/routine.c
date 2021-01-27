@@ -14,7 +14,8 @@
 
 void	routine_forks(t_philo *philo)
 {
-	if (sem_wait(philo->forks->can_take_a_fork) == 0)
+	if (!(*(philo->someone_has_died))
+		&& sem_wait(philo->forks->can_take_a_fork) == 0)
 	{
 		if (!(*(philo->someone_has_died))
 			&& sem_wait(philo->forks->nb_forks_available) == 0)

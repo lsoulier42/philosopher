@@ -23,7 +23,8 @@ int	philo_loop(t_data *philo_data)
 	while (++i < philo_data->nb_philo)
 	{
 		ts = get_timestamp() - philo_data->start_ts;
-		if (philo_data->time_to_die < ts - philo_data->philosophers[i].last_eat_date
+		if (philo_data->time_to_die < ts
+			- philo_data->philosophers[i].last_eat_date
 			&& philo_data->philosophers[i].state != EAT)
 		{
 			philo_data->philosophers[i].state = DEAD;

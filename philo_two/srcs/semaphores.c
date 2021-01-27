@@ -34,15 +34,6 @@ int	init_forks(t_data *philo_data)
 
 int	delete_forks(t_data *philo_data)
 {
-	int i;
-	int j;
-
-	i = -1;
-	j = -1;
-	while (++i < philo_data->nb_forks)
-		sem_post(philo_data->forks.nb_forks_available);
-	while (++j < philo_data->nb_forks)
-		sem_post(philo_data->forks.can_take_a_fork);
 	sem_close(philo_data->forks.nb_forks_available);
 	sem_close(philo_data->forks.can_take_a_fork);
 	sem_unlink("forks");

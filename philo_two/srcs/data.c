@@ -66,8 +66,17 @@ int	init_data(t_data *philo_data, int argc, char **argv)
 
 int	delete_data(t_data *philo_data)
 {
-	delete_forks(philo_data);
+	int i;
+	int j;
+
+	i = -1;
+	j = -1;
+	while (++i < philo_data->nb_forks)
+		sem_post(philo_data->forks.nb_forks_available);
+	while (++j < philo_data->nb_forks)
+		sem_post(philo_data->forks.can_take_a_fork);
 	if (philo_data->philosophers)
 		delete_philosophers(philo_data);
+	delete_forks(philo_data);
 	return (free_struct(philo_data));
 }
