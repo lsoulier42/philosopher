@@ -22,7 +22,7 @@ int init_philosophers(t_data *philo_data)
 	{
 		current = philo_data->philosophers + i;
 		current->num = i + 1;
-		current->state = i % 2 == 0 ? SLEEP : EAT;
+		current->state = SLEEP;
 		current->last_eat_date = 0;
 		current->last_sleep_date = 0;
 		current->start_ts = philo_data->start_ts;
@@ -39,7 +39,6 @@ int load_process(t_data *philo_data)
 {
 	int			i;
 	pid_t		cpid;
-	t_process	*current;
 
 	i = -1;
 	while(++i < philo_data->nb_philo)
@@ -48,11 +47,7 @@ int load_process(t_data *philo_data)
 		if (cpid == 0)
 			philo_routine(&(philo_data->philosophers[i]));
 		else if (cpid != -1)
-		{
-			current = philo_data->process + i;
-			current->process_id = cpid;
-			current->someone_has_died = &(philo_data->someone_has_died);
-		}
+			philo_data->process_id[i] = cpid;
 		else
 			return (0);
 	}

@@ -99,6 +99,7 @@ void				philo_routine_loop(t_philo *philo, int ts);
 
 int					init_forks(t_data *philo_data);
 int					delete_forks(t_data *philo_data);
+void 				unlink_forks(void);
 
 int					philo_loop(t_data *philo_data);
 #endif

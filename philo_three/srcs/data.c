@@ -14,9 +14,9 @@
 
 int	alloc_struct(t_data *philo_data)
 {
-	philo_data->process = (t_process*)malloc(sizeof(t_process)
+	philo_data->process_id = (pid_t*)malloc(sizeof(pid_t)
 		* philo_data->nb_philo);
-	if (!(philo_data->process))
+	if (!(philo_data->process_id))
 		return (0);
 	philo_data->philosophers = (t_philo*)malloc(sizeof(t_philo)
 		* philo_data->nb_philo);
@@ -35,8 +35,8 @@ int	init_struct(t_data *philo_data)
 
 int	free_struct(t_data *philo_data)
 {
-	if (philo_data->process)
-		free(philo_data->process);
+	if (philo_data->process_id)
+		free(philo_data->process_id);
 	if (philo_data->philosophers)
 		free(philo_data->philosophers);
 	return (0);
@@ -51,11 +51,10 @@ int	init_data(t_data *philo_data, int argc, char **argv)
 	philo_data->time_to_eat = ft_atoi(argv[3]);
 	philo_data->time_to_sleep = ft_atoi(argv[4]);
 	philo_data->start_ts = get_timestamp();
-	philo_data->someone_has_died = 0;
 	philo_data->nb_meal_max = UNLIMITED_MEAL;
 	if (argc == 6)
 		philo_data->nb_meal_max = ft_atoi(argv[5]);
-	philo_data->process = NULL;
+	philo_data->process_id = NULL;
 	philo_data->philosophers = NULL;
 	if (!alloc_struct(philo_data))
 		return (0);

@@ -48,11 +48,13 @@ void	routine_eat(t_philo *philo, long ts)
 	print_state(ts, philo->num, philo->state);
 }
 
-int philo_routine(t_philo *philo)
+void *routine_death(void *philo_void)
 {
-	int		ts;
+	int			ts;
+	t_philo 	*philo;
 
-	while (philo->state != DEAD && philo->nb_meal_max != 0)
+	philo = (t_philo*)philo_void;
+	while (philo->state != DEAD)
 	{
 		ts = get_timestamp() - philo->start_ts;
 		if (ts - philo->last_eat_date > philo->time_to_die
@@ -60,8 +62,24 @@ int philo_routine(t_philo *philo)
 		{
 			philo->state = DEAD;
 			print_state(ts, philo->num, philo->state);
+			sem_post(philo->forks->someone_has_died);
 		}
-		else if (philo->state == THINK)
+		usleep(100);
+	}
+	return (NULL);
+}
+
+int philo_routine(t_philo *philo)
+{
+	int			ts;
+	pthread_t	death;
+
+	if (pthread_create(&death, NULL, &routine_death, philo) != 0)
+		return (0);
+	while (philo->state != DEAD && philo->nb_meal_max != 0)
+	{
+		ts = get_timestamp() - philo->start_ts;
+		if (philo->state == THINK)
 			routine_forks(philo);
 		else if (philo->state == HAS_FORKS)
 			routine_eat(philo, ts);
@@ -76,7 +94,5 @@ int philo_routine(t_philo *philo)
 		}
 		usleep(100);
 	}
-	if (philo->state == DEAD)
-		exit(DEAD);
-	exit(ALIVE);
+	return (pthread_join(death, NULL));
 }

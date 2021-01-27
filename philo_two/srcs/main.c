@@ -24,11 +24,8 @@ int	main(int argc, char **argv)
 			return (EXIT_FAILURE);
 		if (!load_threads(&philo_data))
 			return (delete_data(&philo_data) + EXIT_FAILURE);
-		while (1)
-		{
-			if (!philo_loop(&philo_data))
-				break ;
-		}
+		while (philo_loop(&philo_data))
+			;
 		delete_data(&philo_data);
 	}
 	else

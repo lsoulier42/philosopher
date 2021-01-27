@@ -16,6 +16,7 @@ int	init_forks(t_data *philo_data)
 {
 	t_fork *forks;
 
+	unlink_forks();
 	forks = &(philo_data->forks);
 	forks->nb_forks_available = sem_open("forks", O_RDWR | O_CREAT,
 		0664, philo_data->nb_forks);
@@ -26,7 +27,15 @@ int	init_forks(t_data *philo_data)
 	if (forks->can_take_a_fork == SEM_FAILED)
 	{
 		sem_close(philo_data->forks.nb_forks_available);
-		sem_unlink("forks");
+		unlink_forks();
+		return (0);
+	}
+	forks->someone_has_died = sem_open("dead", O_RDWR | O_CREAT, 0664, 0);
+	if (forks->someone_has_died == SEM_FAILED)
+	{
+		sem_close(philo_data->forks.nb_forks_available);
+		sem_close(philo_data->forks.can_take_a_fork);
+		unlink_forks();
 		return (0);
 	}
 	return (1);
@@ -34,18 +43,16 @@ int	init_forks(t_data *philo_data)
 
 int	delete_forks(t_data *philo_data)
 {
-	int i;
-	int j;
-
-	i = -1;
-	j = -1;
-	while (++i < philo_data->nb_forks)
-		sem_post(philo_data->forks.nb_forks_available);
-	while (++j < philo_data->nb_forks)
-		sem_post(philo_data->forks.can_take_a_fork);
 	sem_close(philo_data->forks.nb_forks_available);
 	sem_close(philo_data->forks.can_take_a_fork);
+	sem_close(philo_data->forks.someone_has_died);
+	unlink_forks();
+	return (1);
+}
+
+void unlink_forks(void)
+{
 	sem_unlink("forks");
 	sem_unlink("can_take");
-	return (1);
+	sem_unlink("dead");
 }

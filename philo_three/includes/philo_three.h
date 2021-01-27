@@ -32,14 +32,14 @@ typedef enum		e_philo_state
 	SLEEP,
 	THINK,
 	HAS_FORKS,
-	DEAD,
-	ALIVE
+	DEAD
 }					t_philo_state;
 
 typedef struct		s_fork
 {
 	sem_t			*nb_forks_available;
 	sem_t			*can_take_a_fork;
+	sem_t			*someone_has_died;
 }					t_fork;
 
 typedef struct		s_philo
@@ -56,12 +56,6 @@ typedef struct		s_philo
 	t_fork			*forks;
 }					t_philo;
 
-typedef struct 		s_process
-{
-	pid_t			process_id;
-	int				*someone_has_died;
-}					t_process;
-
 typedef struct		s_data
 {
 	int				nb_philo;
@@ -71,9 +65,8 @@ typedef struct		s_data
 	int				time_to_sleep;
 	int				nb_meal_max;
 	long			start_ts;
-	int 			someone_has_died;
 	t_fork			forks;
-	t_process		*process;
+	pid_t			*process_id;
 	t_philo			*philosophers;
 }					t_data;
 
@@ -99,6 +92,7 @@ int					philo_loop(t_data *philo_data);
 
 int					init_forks(t_data *philo_data);
 int					delete_forks(t_data *philo_data);
+void 				unlink_forks(void);
 
 int 				philo_routine(t_philo *philo);
 void				routine_forks(t_philo *philo);
