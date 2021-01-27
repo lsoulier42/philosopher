@@ -6,7 +6,7 @@
 /*   By: lsoulier <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/22 09:45:30 by lsoulier          #+#    #+#             */
-/*   Updated: 2021/01/22 09:45:40 by lsoulier         ###   ########.fr       */
+/*   Updated: 2021/01/27 12:01:12 by lsoulier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,12 +52,7 @@ void	routine_eat(t_philo *philo, long ts)
 
 void	philo_routine_loop(t_philo *philo, int ts)
 {
-	if (philo->time_to_die < ts - philo->last_eat_date)
-	{
-		philo->state = DEAD;
-		print_state(ts, philo->num, philo->state);
-	}
-	else if (philo->state == THINK)
+	if (philo->state == THINK)
 		routine_forks(philo);
 	else if (philo->state == HAS_FORKS)
 		routine_eat(philo, ts);

@@ -22,7 +22,7 @@ void	init_philosophers(t_data *philo_data)
 	{
 		philo = &(philo_data->philosophers[i]);
 		philo->num = i + 1;
-		philo->state = i % 2 == 0 ? SLEEP : EAT;
+		philo->state = THINK;
 		philo->last_eat_date = 0;
 		philo->last_sleep_date = 0;
 		philo->start_ts = philo_data->start_ts;

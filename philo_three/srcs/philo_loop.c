@@ -14,11 +14,23 @@
 
 void *monitoring_routine(void *data_void)
 {
-	pid_t	*cpid;
-	int		stat_loc;
+	t_process	*current;
+	int			stat_loc;
+	int 		everyone_has_eaten;
 
-	cpid = (pid_t*)data_void;
-	waitpid(*cpid, &stat_loc, 0);
+	current = (t_process*)data_void;
+	everyone_has_eaten = 0;
+	waitpid(current->process_id, &stat_loc, WNOHANG);
+	if (WIFEXITED(stat_loc))
+	{
+		if (WEXITSTATUS(stat_loc) == DEAD)
+			*(current->someone_has_died) = 1;
+		else
+			everyone_has_eaten = 1;
+	}
+	while(!(*(current->someone_has_died)) && !everyone_has_eaten)
+		;
+	kill(current->process_id, SIGTERM);
 	return (NULL);
 }
 
@@ -26,7 +38,7 @@ int	philo_loop(t_data *philo_data)
 {
 	int			i;
 	pthread_t	*monitoring;
-	int			is_finish;
+	int 		is_finish;
 
 	i = -1;
 	is_finish = 0;
@@ -40,11 +52,11 @@ int	philo_loop(t_data *philo_data)
 	}
 	while (!is_finish)
 	{
-		i = -1;
 		while (++i < philo_data->nb_philo)
 		{
-			if (pthread_detach(monitoring[i]) == 0)
-				is_finish = 1;
+			is_finish = 1;
+			if (pthread_detach(monitoring[i]) != 0)
+				is_finish = 0;
 		}
 	}
 	free(monitoring);

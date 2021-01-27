@@ -4,7 +4,7 @@ OBJS= $(addprefix srcs/,$(SRCS:.c=.o))
 CC= gcc
 CFLAGS= -Wall -Werror -Wextra
 HEADER= -I includes
-LIBS= lpthread
+LIBS= -lpthread
 
 .c.o:
 	$(CC) $(CFLAGS) $(HEADER) -c $< -o $(<:.c=.o)

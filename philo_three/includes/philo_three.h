@@ -32,7 +32,8 @@ typedef enum		e_philo_state
 	SLEEP,
 	THINK,
 	HAS_FORKS,
-	DEAD
+	DEAD,
+	ALIVE
 }					t_philo_state;
 
 typedef struct		s_fork
@@ -47,9 +48,19 @@ typedef struct		s_philo
 	char			state;
 	long			last_eat_date;
 	long			last_sleep_date;
+	int 			time_to_die;
+	int				time_to_eat;
+	int 			time_to_sleep;
 	int 			nb_meal_max;
+	long			start_ts;
 	t_fork			*forks;
 }					t_philo;
+
+typedef struct 		s_process
+{
+	pid_t			process_id;
+	int				*someone_has_died;
+}					t_process;
 
 typedef struct		s_data
 {
@@ -60,8 +71,9 @@ typedef struct		s_data
 	int				time_to_sleep;
 	int				nb_meal_max;
 	long			start_ts;
+	int 			someone_has_died;
 	t_fork			forks;
-	pid_t			*process;
+	t_process		*process;
 	t_philo			*philosophers;
 }					t_data;
 
@@ -88,12 +100,11 @@ int					philo_loop(t_data *philo_data);
 int					init_forks(t_data *philo_data);
 int					delete_forks(t_data *philo_data);
 
-int 				philo_routine(t_data *philo_data, t_philo *philo);
-void				routine_forks(t_data *philo_data, t_philo *philo);
+int 				philo_routine(t_philo *philo);
+void				routine_forks(t_philo *philo);
 void				routine_sleep(t_philo *philo, long ts);
 void				routine_eat(t_philo *philo, long ts);
 
-int 				delete_philosophers(t_data *philo_data);
 int 				init_philosophers(t_data *philo_data);
 int 				load_process(t_data *philo_data);
 #endif
