@@ -16,16 +16,19 @@ void	print_state(long ts, int num, char state)
 {
 	char	*output;
 
-	output = "";
-	if (state == EAT)
-		output = "is eating";
-	else if (state == SLEEP)
-		output = "is sleeping";
-	else if (state == THINK)
-		output = "is thinking";
-	else if (state == DEAD)
-		output = "died";
-	else if (state == HAS_FORKS)
-		output = "has taken a fork";
-	printf("%ld %d %s\n", ts, num, output);
+	if (state == DEAD || !g_someone_has_died)
+	{
+		output = "";
+		if (state == EAT)
+			output = "is eating";
+		else if (state == SLEEP)
+			output = "is sleeping";
+		else if (state == THINK)
+			output = "is thinking";
+		else if (state == DEAD)
+			output = "died";
+		else if (state == HAS_FORKS)
+			output = "has taken a fork";
+		printf("%ld %d %s\n", ts, num, output);
+	}
 }

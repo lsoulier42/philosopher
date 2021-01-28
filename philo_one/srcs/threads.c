@@ -25,7 +25,6 @@ void	init_philosophers_loop(t_data *philo_data, t_philo *philo, int i)
 	philo->time_to_sleep = philo_data->time_to_sleep;
 	philo->time_to_eat = philo_data->time_to_eat;
 	philo->nb_meal_max = philo_data->nb_meal_max;
-	philo->someone_has_died = &(philo_data->someone_has_died);
 	left_fork_id = i;
 	right_fork_id = i - 1;
 	if (right_fork_id == -1)

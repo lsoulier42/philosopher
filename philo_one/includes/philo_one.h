@@ -59,7 +59,6 @@ typedef struct		s_philo
 	int				time_to_sleep;
 	int				nb_meal_max;
 	int				start_ts;
-	int				*someone_has_died;
 	t_fork			*forks[2];
 }					t_philo;
 
@@ -72,11 +71,12 @@ typedef struct		s_data
 	int				time_to_sleep;
 	int				nb_meal_max;
 	int				start_ts;
-	int				someone_has_died;
 	t_fork			*forks;
 	pthread_t		*threads;
 	t_philo			*philosophers;
 }					t_data;
+
+extern int			g_someone_has_died;
 
 int					init_data(t_data *philo_data, int argc, char **argv);
 int					delete_data(t_data *philo_data);

@@ -57,7 +57,6 @@ int	init_data(t_data *philo_data, int argc, char **argv)
 	philo_data->time_to_sleep = ft_atoi(argv[4]);
 	philo_data->start_ts = get_timestamp();
 	philo_data->nb_meal_max = UNLIMITED_MEAL;
-	philo_data->someone_has_died = 0;
 	if (argc == 6)
 		philo_data->nb_meal_max = ft_atoi(argv[5]);
 	philo_data->forks = NULL;

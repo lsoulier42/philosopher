@@ -20,7 +20,8 @@ void	routine_forks(t_philo *philo)
 	int		second_fork_side;
 
 	first_fork_side = philo->num % 2;
-	if (philo->forks[first_fork_side]->state == UNLOCKED)
+	if (philo->forks[first_fork_side]->state == UNLOCKED
+		&& !g_someone_has_died)
 	{
 		first_fork_taken = take_a_fork(philo, first_fork_side);
 		second_fork_side = first_fork_side == 0;
@@ -55,7 +56,7 @@ void	*philo_routine(void *philo_void)
 
 	philo = (t_philo*)philo_void;
 	while (philo->state != DEAD && philo->nb_meal_max != 0
-		&& !(*(philo->someone_has_died)))
+		&& !g_someone_has_died)
 	{
 		ts = get_timestamp() - philo->start_ts;
 		if (philo->state == THINK)

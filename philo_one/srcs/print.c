@@ -12,28 +12,22 @@
 
 #include "philo_one.h"
 
-long	get_timestamp(void)
-{
-	struct timeval	tv;
-
-	gettimeofday(&tv, NULL);
-	return ((tv.tv_sec * 1000) + tv.tv_usec / 1000);
-}
-
 void	print_state(int ts, int num, char state)
 {
 	char	*output;
 
-	output = "";
-	if (state == EAT)
-		output = "is eating";
-	else if (state == SLEEP)
-		output = "is sleeping";
-	else if (state == THINK)
-		output = "is thinking";
-	else if (state == DEAD)
-		output = "died";
-	else if (state == HAS_FORKS)
-		output = "has taken a fork";
-	printf("%d %d %s\n", ts, num, output);
+	if (state == DEAD || !g_someone_has_died)
+	{
+		if (state == EAT)
+			output = "is eating";
+		else if (state == SLEEP)
+			output = "is sleeping";
+		else if (state == THINK)
+			output = "is thinking";
+		else if (state == DEAD)
+			output = "died";
+		else
+			output = "has taken a fork";
+		printf("%d %d %s\n", ts, num, output);
+	}
 }

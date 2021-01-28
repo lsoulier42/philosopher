@@ -30,7 +30,6 @@ void	init_philosophers(t_data *philo_data)
 		philo->time_to_eat = philo_data->time_to_eat;
 		philo->nb_meal_max = philo_data->nb_meal_max;
 		philo->forks = &(philo_data->forks);
-		philo->someone_has_died = &(philo_data->someone_has_died);
 		philo->time_to_die = philo_data->time_to_die;
 	}
 }
