@@ -80,9 +80,11 @@ void	philo_loop(t_philo *philo, int *nb_meals)
 		*(nb_meals) += 1;
 		if (*nb_meals == philo->nb_meal_max)
 		{
-			pthread_mutex_lock(philo->output);
+			if(pthread_mutex_lock(philo->output) != 0)
+				thread_error(MUTEX_LOCK_ERROR);
 			*(philo->nb_finished) += 1;
-			pthread_mutex_unlock(philo->output);
+			if(pthread_mutex_unlock(philo->output) != 0)
+				thread_error(MUTEX_UNLOCK_ERROR);
 		}
 	}
 	else if (philo->state == EAT)
@@ -96,7 +98,6 @@ void	philo_loop(t_philo *philo, int *nb_meals)
 		philo->state = THINK;
 		print_state(philo, 0);
 	}
-	usleep(10);
 }
 
 void	*philo_routine(void *philo_void)
@@ -111,7 +112,10 @@ void	*philo_routine(void *philo_void)
 	if (pthread_create(&death, NULL, &routine_death, philo) != 0)
 		return (thread_error(CREATE_THREAD_ERROR));
 	while(*(philo->nb_finished) != philo->nb_philo)
+	{
 		philo_loop(philo, &nb_meals);
+		usleep(10);
+	}
 	if (*(philo->nb_finished) == philo->nb_philo)
 		if (pthread_mutex_unlock(philo->is_dead) != 0)
 			thread_error(MUTEX_UNLOCK_ERROR);
