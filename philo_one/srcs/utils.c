@@ -3,21 +3,37 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lsoulier <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: lsoulier <lsoulier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/01/28 17:23:24 by lsoulier          #+#    #+#             */
-/*   Updated: 2021/01/28 17:23:27 by lsoulier         ###   ########.fr       */
+/*   Created: 2021/02/17 14:20:53 by lsoulier          #+#    #+#             */
+/*   Updated: 2021/02/17 14:20:54 by lsoulier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_one.h"
 
-long	get_timestamp(void)
+int	ft_isdigit(int c)
 {
-	struct timeval	tv;
+	return (c >= '0' && c <= '9');
+}
 
-	gettimeofday(&tv, NULL);
-	return ((tv.tv_sec * 1000) + tv.tv_usec / 1000);
+int	ft_isspace(char c)
+{
+	return (c == ' ' || c == '\f' || c == '\n'
+			|| c == '\r' || c == '\t' || c == '\v');
+}
+
+int	ft_isnum(char *str)
+{
+	int	i;
+
+	i = 0;
+	if (str[i] == '-' || str[i] == '+')
+		i++;
+	while (str[i])
+		if (!ft_isdigit(str[i++]))
+			return (0);
+	return (1);
 }
 
 int	ft_atoi(const char *str)
@@ -45,26 +61,10 @@ int	ft_atoi(const char *str)
 	return (r_val * sign);
 }
 
-int	ft_isdigit(int c)
+long	get_timestamp(long start_ts)
 {
-	return (c >= '0' && c <= '9');
-}
+	struct timeval	tv;
 
-int	ft_isnum(char *str)
-{
-	int	i;
-
-	i = 0;
-	if (str[i] == '-' || str[i] == '+')
-		i++;
-	while (str[i])
-		if (!ft_isdigit(str[i++]))
-			return (0);
-	return (1);
-}
-
-int	ft_isspace(char c)
-{
-	return (c == ' ' || c == '\f' || c == '\n'
-			|| c == '\r' || c == '\t' || c == '\v');
+	gettimeofday(&tv, NULL);
+	return (((tv.tv_sec * 1000) + tv.tv_usec / 1000) - start_ts);
 }

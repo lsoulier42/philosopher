@@ -50,6 +50,7 @@ typedef struct		s_philo
 	int				time_to_sleep;
 	int				nb_meal_max;
 	long			start_ts;
+	int				*someone_has_died;
 	t_fork			*forks;
 }					t_philo;
 
@@ -62,12 +63,11 @@ typedef struct		s_data
 	int				time_to_sleep;
 	int				nb_meal_max;
 	long			start_ts;
+	int				someone_has_died;
 	t_fork			forks;
 	pthread_t		*threads;
 	t_philo			*philosophers;
 }					t_data;
-
-extern int 			g_someone_has_died;
 
 int					check_args(int argc, char **argv);
 int					invalid_arg_num(char *arg);

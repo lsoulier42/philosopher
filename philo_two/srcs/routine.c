@@ -14,14 +14,19 @@
 
 void	routine_forks(t_philo *philo)
 {
-	if (!g_someone_has_died	&& sem_wait(philo->forks->can_take_a_fork) == 0)
+	if (!(*(philo->someone_has_died))
+		&& sem_wait(philo->forks->can_take_a_fork) == 0)
 	{
-		if (!g_someone_has_died	&& sem_wait(philo->forks->nb_forks_available) == 0)
+		if (!(*(philo->someone_has_died))
+			&& sem_wait(philo->forks->nb_forks_available) == 0)
 		{
-			print_state(get_timestamp() - philo->start_ts, philo->num, HAS_FORKS);
-			if (!g_someone_has_died && sem_wait(philo->forks->nb_forks_available) == 0)
+			print_state(get_timestamp() - philo->start_ts,
+				philo->num, HAS_FORKS);
+			if (!(*(philo->someone_has_died))
+				&& sem_wait(philo->forks->nb_forks_available) == 0)
 			{
-				print_state(get_timestamp() - philo->start_ts, philo->num, HAS_FORKS);
+				print_state(get_timestamp() - philo->start_ts,
+					philo->num, HAS_FORKS);
 				philo->state = HAS_FORKS;
 			}
 		}
@@ -69,7 +74,8 @@ void	*philo_routine(void *philo_void)
 	int		ts;
 
 	philo = (t_philo*)philo_void;
-	while (philo->state != DEAD && philo->nb_meal_max != 0	&& !g_someone_has_died)
+	while (philo->state != DEAD && philo->nb_meal_max != 0
+		&& !(*(philo->someone_has_died)))
 	{
 		ts = get_timestamp() - philo->start_ts;
 		philo_routine_loop(philo, ts);

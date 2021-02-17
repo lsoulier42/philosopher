@@ -24,8 +24,8 @@ int	main(int argc, char **argv)
 			return (EXIT_FAILURE);
 		if (!load_threads(&philo_data))
 			return (delete_data(&philo_data) + EXIT_FAILURE);
-		while (philo_loop(&philo_data))
-			;
+		if (pthread_mutex_lock(&philo_data.is_dead) != 0)
+			thread_error(MUTEX_LOCK_ERROR);
 		delete_data(&philo_data);
 	}
 	else

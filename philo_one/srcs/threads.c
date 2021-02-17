@@ -12,71 +12,57 @@
 
 #include "philo_one.h"
 
-void	init_philosophers_loop(t_data *philo_data, t_philo *philo, int i)
+int 	init_philosophers(t_data *philo_data)
 {
-	int	right_fork_id;
-	int	left_fork_id;
-
-	philo->state = SLEEP;
-	philo->num = i + 1;
-	philo->last_eat_date = 0;
-	philo->last_sleep_date = 0;
-	philo->start_ts = philo_data->start_ts;
-	philo->time_to_sleep = philo_data->time_to_sleep;
-	philo->time_to_eat = philo_data->time_to_eat;
-	philo->nb_meal_max = philo_data->nb_meal_max;
-	left_fork_id = i;
-	right_fork_id = i - 1;
-	if (right_fork_id == -1)
-	{
-		right_fork_id = philo_data->nb_philo - 1;
-		if (philo_data->nb_philo == 1)
-			right_fork_id = 1;
-	}
-	philo->forks[LEFT] = &(philo_data->forks[left_fork_id]);
-	philo->forks[RIGHT] = &(philo_data->forks[right_fork_id]);
-}
-
-void	init_philosophers(t_data *philo_data)
-{
-	int			i;
-	t_philo		*philo;
+	int		i;
+	t_philo	*current;
 
 	i = -1;
 	while (++i < philo_data->nb_philo)
 	{
-		philo = &(philo_data->philosophers[i]);
-		init_philosophers_loop(philo_data, philo, i);
-	}
-}
-
-int		load_threads(t_data *philo_data)
-{
-	int			i;
-	int			create_return;
-
-	i = -1;
-	while (++i < philo_data->nb_philo)
-	{
-		create_return = pthread_create(&(philo_data->threads[i]), NULL,
-			&philo_routine, &(philo_data->philosophers[i]));
-		if (create_return == -1)
-			return (0);
+		current = philo_data->philosophers + i;
+		current->num = i + 1;
+		current->state = SLEEP;
+		current->time_to_die = philo_data->time_to_die;
+		current->time_to_eat = philo_data->time_to_eat;
+		current->time_to_sleep = philo_data->time_to_sleep;
+		current->nb_meal_max = philo_data->nb_meal_max;
+		current->last_eat_date = 0;
+		current->forks[LEFT] = philo_data->forks + i;
+		current->forks[RIGHT] = philo_data->forks + philo_data->nb_philo - 1;
+		if (i != 0)
+			current->forks[RIGHT] = philo_data->forks + i - 1;
+		current->output = &philo_data->output;
+		current->is_dead = &philo_data->is_dead;
+		current->nb_finished = &philo_data->nb_finished;
+		current->nb_philo = philo_data->nb_philo;
 	}
 	return (1);
 }
 
-int		delete_philosophers(t_data *philo_data)
+int		load_threads(t_data *philo_data)
 {
-	int	i;
-	int	error;
+	int i;
 
 	i = -1;
-	error = 0;
-	while (++i < philo_data->nb_philo)
+	while(++i < philo_data->nb_philo)
 	{
-		if (pthread_join(philo_data->threads[i], NULL) != 0)
-			error = 1;
+		if (pthread_create(philo_data->philosophers_threads + i,
+			NULL, &philo_routine, philo_data->philosophers + i) != 0)
+		{
+			thread_error(CREATE_THREAD_ERROR);
+			return (delete_threads(philo_data));
+		}
 	}
-	return (error == 0);
+	return (1);
+}
+
+int delete_threads(t_data *philo_data)
+{
+	int i;
+
+	i = -1;
+	while(++i < philo_data->nb_philo)
+		pthread_detach(philo_data->philosophers_threads[i]);
+	return (0);
 }

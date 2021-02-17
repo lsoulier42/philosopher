@@ -12,22 +12,20 @@
 
 #include "philo_one.h"
 
-void	print_state(int ts, int num, char state)
+void	print_state(t_philo *philo, int is_dead)
 {
-	char	*output;
+	char	**outputs;
 
-	if (state == DEAD || !g_someone_has_died)
+	outputs = (char *[TOTAL_STATES]){"is eating", "is sleeping",
+		"is thinking", "has taken a fork", "died"};
+	if (pthread_mutex_lock(philo->output) != 0)
+		thread_error(MUTEX_LOCK_ERROR);
+	else
 	{
-		if (state == EAT)
-			output = "is eating";
-		else if (state == SLEEP)
-			output = "is sleeping";
-		else if (state == THINK)
-			output = "is thinking";
-		else if (state == DEAD)
-			output = "died";
-		else
-			output = "has taken a fork";
-		printf("%d %d %s\n", ts, num, output);
+		printf("%ld %d %s\n", get_timestamp(philo->start_ts),
+			philo->num, outputs[philo->state]);
+		if (!is_dead)
+			if (pthread_mutex_unlock(philo->output) != 0)
+				thread_error(MUTEX_UNLOCK_ERROR);
 	}
 }

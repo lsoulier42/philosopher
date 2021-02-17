@@ -23,7 +23,7 @@ int	init_forks(t_data *philo_data)
 	if (forks->nb_forks_available == SEM_FAILED)
 		return (0);
 	forks->can_take_a_fork = sem_open("can_take", O_RDWR | O_CREAT,
-		0664, philo_data->nb_forks / 2);
+		0664, philo_data->nb_forks - 1);
 	if (forks->can_take_a_fork == SEM_FAILED)
 	{
 		sem_close(philo_data->forks.nb_forks_available);

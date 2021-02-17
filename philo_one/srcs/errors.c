@@ -49,3 +49,15 @@ int	invalid_arg_nb(void)
 	printf("5. (optional) number_of_time_each_philosophers_must_eat\n");
 	return (EXIT_FAILURE);
 }
+
+void *thread_error(int code)
+{
+	char **errors;
+
+	errors = (char *[TOTAL_THREAD_ERRORS]){"Creating thread went wrong",
+		"Initializing mutex went wrong", "Locking mutex went wrong",
+		"Unlocking mutex went wrong", "Destroying mutex went wrong",
+		"Detaching thread went wrong"};
+	printf("Error\n%s\n", errors[code]);
+	return (NULL);
+}

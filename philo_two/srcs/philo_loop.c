@@ -12,8 +12,6 @@
 
 #include "philo_two.h"
 
-int g_someone_has_died = 0;
-
 int	philo_loop(t_data *philo_data)
 {
 	int	i;
@@ -31,7 +29,7 @@ int	philo_loop(t_data *philo_data)
 		{
 			philo_data->philosophers[i].state = DEAD;
 			print_state(ts, i + 1, DEAD);
-			g_someone_has_died = 1;
+			philo_data->someone_has_died = 1;
 			return (0);
 		}
 		if (philo_data->philosophers[i].nb_meal_max != 0)

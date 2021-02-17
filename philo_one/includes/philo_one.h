@@ -22,12 +22,6 @@
 # define MIN_NB_ARGS 5
 # define MAX_NB_ARGS 6
 
-typedef enum		e_fork_status
-{
-	UNLOCKED,
-	LOCKED
-}					t_fork_status;
-
 typedef enum		e_fork_side
 {
 	LEFT,
@@ -40,26 +34,36 @@ typedef enum		e_philo_state
 	SLEEP,
 	THINK,
 	HAS_FORKS,
-	DEAD
+	DEAD,
+	TOTAL_STATES
 }					t_philo_state;
 
-typedef struct		s_fork
+typedef enum		e_thread_errors
 {
-	pthread_mutex_t mutex_id;
-	char			state;
-}					t_fork;
+	CREATE_THREAD_ERROR,
+	MUTEX_INIT_ERROR,
+	MUTEX_LOCK_ERROR,
+	MUTEX_UNLOCK_ERROR,
+	MUTEX_DESTROY_ERROR,
+	DETACH_THREAD_ERROR,
+	TOTAL_THREAD_ERRORS
+}					t_thread_errors;
 
 typedef struct		s_philo
 {
 	int				num;
-	char			state;
-	int				last_eat_date;
-	int				last_sleep_date;
+	int				state;
+	int				time_to_die;
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				nb_meal_max;
-	int				start_ts;
-	t_fork			*forks[2];
+	long			last_eat_date;
+	long			start_ts;
+	int 			*nb_finished;
+	int 			nb_philo;
+	pthread_mutex_t	*forks[2];
+	pthread_mutex_t *output;
+	pthread_mutex_t *is_dead;
 }					t_philo;
 
 typedef struct		s_data
@@ -70,13 +74,13 @@ typedef struct		s_data
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				nb_meal_max;
-	int				start_ts;
-	t_fork			*forks;
-	pthread_t		*threads;
+	int				nb_finished;
+	pthread_mutex_t	*forks;
+	pthread_mutex_t output;
+	pthread_mutex_t is_dead;
+	pthread_t		*philosophers_threads;
 	t_philo			*philosophers;
 }					t_data;
-
-extern int			g_someone_has_died;
 
 int					init_data(t_data *philo_data, int argc, char **argv);
 int					delete_data(t_data *philo_data);
@@ -93,23 +97,20 @@ int					ft_isspace(char c);
 int					ft_isnum(char *str);
 int					ft_isdigit(int c);
 
-int					philo_loop(t_data *philo_data);
-
-void				init_philosophers(t_data *philo_data);
+int					init_philosophers(t_data *philo_data);
 int					load_threads(t_data *philo_data);
-int					delete_philosophers(t_data *philo_data);
+int					delete_threads(t_data *philo_data);
+void 				*thread_error(int code);
 
 void				*philo_routine(void *philo_data_void);
-void				routine_eat(t_philo *philo, int ts);
-void				routine_sleep(t_philo *philo, int ts);
-void				routine_forks(t_philo *philo);
+void				philo_loop(t_philo *philo, int *nb_meals);
+void				routine_eat(t_philo *philo);
+void 				*routine_death(void *philo_void);
 
-int					init_forks(t_data *philo_data);
-int					delete_forks(t_data *philo_data);
-int					leave_forks(t_philo *philo);
-int					take_a_fork(t_philo *philo, int side_id);
+int					init_mutexes(t_data *philo_data);
+int					delete_mutexes(t_data *philo_data);
 
-long				get_timestamp(void);
-void				print_state(int ts, int num, char state);
+long				get_timestamp(long start_ts);
+void				print_state(t_philo *philo, int is_dead);
 
 #endif

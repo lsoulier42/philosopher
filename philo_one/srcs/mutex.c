@@ -12,73 +12,49 @@
 
 #include "philo_one.h"
 
-int	init_forks(t_data *philo_data)
+int delete_mutexes(t_data *philo_data)
 {
-	int		i;
-	int		return_value;
-	t_fork	*fork;
+	int i;
 
 	i = -1;
-	while (++i < philo_data->nb_forks)
+	while(++i < philo_data->nb_forks)
+		pthread_mutex_unlock(philo_data->forks + i);
+	i = -1;
+	while(++i < philo_data->nb_forks)
 	{
-		fork = philo_data->forks + i;
-		return_value = pthread_mutex_init(&(fork->mutex_id), NULL);
-		if (return_value == -1)
-			return (0);
-		fork->state = UNLOCKED;
+		pthread_mutex_unlock(philo_data->forks + i);
+		pthread_mutex_destroy(philo_data->forks + i);
 	}
-	return (1);
+	pthread_mutex_destroy(&philo_data->output);
+	pthread_mutex_unlock(&philo_data->is_dead);
+	pthread_mutex_destroy(&philo_data->is_dead);
+	return (0);
 }
 
-int	take_a_fork(t_philo *philo, int side_id)
+int init_mutexes(t_data *philo_data)
 {
-	int				fork_taken;
-	pthread_mutex_t	*mid;
+	int i;
 
-	fork_taken = 0;
-	if (philo->forks[side_id]->state == UNLOCKED)
+	i = -1;
+	while(++i < philo_data->nb_forks)
 	{
-		mid = &(philo->forks[side_id]->mutex_id);
-		fork_taken = pthread_mutex_lock(mid) == 0;
-		if (fork_taken)
+		if (pthread_mutex_init(philo_data->forks + i, NULL) != 0)
 		{
-			philo->forks[side_id]->state = LOCKED;
-			print_state(get_timestamp() - philo->start_ts,
-				philo->num, HAS_FORKS);
+			thread_error(MUTEX_INIT_ERROR);
+			return (delete_mutexes(philo_data));
 		}
 	}
-	return (fork_taken);
-}
-
-int	delete_forks(t_data *philo_data)
-{
-	int		i;
-	int		return_value;
-	t_fork	*fork;
-
-	i = -1;
-	while (++i < philo_data->nb_forks)
+	if (pthread_mutex_init(&philo_data->output, NULL) != 0)
 	{
-		fork = philo_data->forks + i;
-		pthread_mutex_unlock(&(fork->mutex_id));
-		return_value = pthread_mutex_destroy(&(fork->mutex_id));
-		if (return_value == -1)
-			return (0);
+		thread_error(MUTEX_INIT_ERROR);
+		return (delete_mutexes(philo_data));
 	}
-	return (1);
-}
-
-int	leave_forks(t_philo *philo)
-{
-	if (philo->forks[LEFT]->state == LOCKED)
+	if (pthread_mutex_init(&philo_data->is_dead, NULL) != 0)
 	{
-		pthread_mutex_unlock(&(philo->forks[LEFT]->mutex_id));
-		philo->forks[LEFT]->state = UNLOCKED;
+		thread_error(MUTEX_INIT_ERROR);
+		return (delete_mutexes(philo_data));
 	}
-	if (philo->forks[RIGHT]->state == LOCKED)
-	{
-		pthread_mutex_unlock(&(philo->forks[RIGHT]->mutex_id));
-		philo->forks[RIGHT]->state = UNLOCKED;
-	}
+	if (pthread_mutex_lock(&philo_data->is_dead) != 0)
+		return (thread_error(MUTEX_LOCK_ERROR) != NULL);
 	return (1);
 }
