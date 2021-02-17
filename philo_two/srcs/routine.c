@@ -3,83 +3,111 @@
 /*                                                        :::      ::::::::   */
 /*   routine.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lsoulier <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: lsoulier <lsoulier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/01/22 09:45:30 by lsoulier          #+#    #+#             */
-/*   Updated: 2021/01/27 12:01:12 by lsoulier         ###   ########.fr       */
+/*   Created: 2021/02/18 00:07:37 by lsoulier          #+#    #+#             */
+/*   Updated: 2021/02/18 00:07:38 by lsoulier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_two.h"
 
-void	routine_forks(t_philo *philo)
+void *routine_death(void *philo_void)
 {
-	if (!(*(philo->someone_has_died))
-		&& sem_wait(philo->forks->can_take_a_fork) == 0)
+	t_philo *philo;
+
+	philo = (t_philo*)philo_void;
+	while(*(philo->nb_finished) != philo->nb_philo)
 	{
-		if (!(*(philo->someone_has_died))
-			&& sem_wait(philo->forks->nb_forks_available) == 0)
+		if ((philo->time_to_die
+			< get_timestamp(philo->start_ts) - philo->last_eat_date)
+			&& philo->state != EAT)
 		{
-			print_state(get_timestamp() - philo->start_ts,
-				philo->num, HAS_FORKS);
-			if (!(*(philo->someone_has_died))
-				&& sem_wait(philo->forks->nb_forks_available) == 0)
+			philo->state = DEAD;
+			if (*(philo->nb_finished) != philo->nb_philo)
 			{
-				print_state(get_timestamp() - philo->start_ts,
-					philo->num, HAS_FORKS);
-				philo->state = HAS_FORKS;
+				print_state(philo, 1);
+				*(philo->nb_finished) = philo->nb_philo;
 			}
 		}
+		usleep(10);
 	}
+	return (NULL);
 }
 
-void	routine_sleep(t_philo *philo, long ts)
+void	routine_eat(t_philo *philo)
 {
-	sem_post(philo->forks->nb_forks_available);
-	sem_post(philo->forks->nb_forks_available);
-	sem_post(philo->forks->can_take_a_fork);
-	philo->state = SLEEP;
-	philo->last_sleep_date = ts;
-	print_state(ts, philo->num, philo->state);
+	if (sem_wait(philo->forks) == 0)
+	{
+		philo->state = HAS_FORKS;
+		print_state(philo, 0);
+		if (sem_wait(philo->forks) == 0)
+		{
+			print_state(philo, 0);
+			philo->last_eat_date = get_timestamp(philo->start_ts);
+			philo->state = EAT;
+			print_state(philo, 0);
+			usleep(philo->time_to_eat * 1000);
+			if(sem_post(philo->forks) != 0)
+				thread_error(SEM_POST_ERROR);
+			if(sem_post(philo->forks) != 0)
+				thread_error(SEM_POST_ERROR);
+		}
+		else
+			thread_error(SEM_WAIT_ERROR);
+	}
+	else
+		thread_error(SEM_WAIT_ERROR);
 }
 
-void	routine_eat(t_philo *philo, long ts)
-{
-	philo->state = EAT;
-	philo->last_eat_date = ts;
-	philo->nb_meal_max -= 1;
-	print_state(ts, philo->num, philo->state);
-}
-
-void	philo_routine_loop(t_philo *philo, int ts)
+void	philo_loop(t_philo *philo, int *nb_meals)
 {
 	if (philo->state == THINK)
-		routine_forks(philo);
-	else if (philo->state == HAS_FORKS)
-		routine_eat(philo, ts);
-	else if (philo->state == EAT
-		&& philo->time_to_eat < ts - philo->last_eat_date)
-		routine_sleep(philo, ts);
-	else if (philo->state == SLEEP
-		&& philo->time_to_sleep < ts - philo->last_sleep_date)
+	{
+		routine_eat(philo);
+		*(nb_meals) += 1;
+		if (*nb_meals == philo->nb_meal_max)
+		{
+			if(sem_wait(philo->output) != 0)
+				thread_error(SEM_WAIT_ERROR);
+			*(philo->nb_finished) += 1;
+			if(sem_post(philo->output) != 0)
+				thread_error(SEM_POST_ERROR);
+		}
+	}
+	else if (philo->state == EAT)
+	{
+		philo->state = SLEEP;
+		print_state(philo, 0);
+		usleep(philo->time_to_sleep * 1000);
+	}
+	else if (philo->state == SLEEP)
 	{
 		philo->state = THINK;
-		print_state(ts, philo->num, philo->state);
+		print_state(philo, 0);
 	}
 }
 
 void	*philo_routine(void *philo_void)
 {
-	t_philo	*philo;
-	int		ts;
+	t_philo		*philo;
+	pthread_t	death;
+	int			nb_meals;
 
 	philo = (t_philo*)philo_void;
-	while (philo->state != DEAD && philo->nb_meal_max != 0
-		&& !(*(philo->someone_has_died)))
+	philo->start_ts = get_timestamp(0);
+	nb_meals = 0;
+	if (pthread_create(&death, NULL, &routine_death, philo) != 0)
+		return (thread_error(CREATE_THREAD_ERROR));
+	while(*(philo->nb_finished) != philo->nb_philo)
 	{
-		ts = get_timestamp() - philo->start_ts;
-		philo_routine_loop(philo, ts);
-		usleep(100);
+		philo_loop(philo, &nb_meals);
+		usleep(10);
 	}
+	if (*(philo->nb_finished) == philo->nb_philo)
+		if (sem_post(philo->is_dead) != 0)
+			thread_error(SEM_POST_ERROR);
+	if (pthread_detach(death) != 0)
+		thread_error(DETACH_THREAD_ERROR);
 	return (NULL);
 }

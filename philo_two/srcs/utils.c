@@ -3,27 +3,27 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lsoulier <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: lsoulier <lsoulier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/01/22 09:33:51 by lsoulier          #+#    #+#             */
-/*   Updated: 2021/01/22 09:34:02 by lsoulier         ###   ########.fr       */
+/*   Created: 2021/02/18 00:07:55 by lsoulier          #+#    #+#             */
+/*   Updated: 2021/02/18 00:07:56 by lsoulier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_two.h"
 
-long	get_timestamp(void)
+int	ft_isdigit(int c)
 {
-	struct timeval	tv;
-	long			ms;
-
-	gettimeofday(&tv, NULL);
-	ms = tv.tv_sec * 1000;
-	ms += tv.tv_usec / 1000;
-	return (ms);
+	return (c >= '0' && c <= '9');
 }
 
-int		ft_isnum(char *str)
+int	ft_isspace(char c)
+{
+	return (c == ' ' || c == '\f' || c == '\n'
+			|| c == '\r' || c == '\t' || c == '\v');
+}
+
+int	ft_isnum(char *str)
 {
 	int	i;
 
@@ -36,18 +36,7 @@ int		ft_isnum(char *str)
 	return (1);
 }
 
-int		ft_isdigit(int c)
-{
-	return (c >= '0' && c <= '9');
-}
-
-int		ft_isspace(char c)
-{
-	return (c == ' ' || c == '\f' || c == '\n'
-			|| c == '\r' || c == '\t' || c == '\v');
-}
-
-int		ft_atoi(const char *str)
+int	ft_atoi(const char *str)
 {
 	int	i;
 	int	sign;
@@ -70,4 +59,12 @@ int		ft_atoi(const char *str)
 		i++;
 	}
 	return (r_val * sign);
+}
+
+long	get_timestamp(long start_ts)
+{
+	struct timeval	tv;
+
+	gettimeofday(&tv, NULL);
+	return (((tv.tv_sec * 1000) + tv.tv_usec / 1000) - start_ts);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   errors.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lsoulier <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: lsoulier <lsoulier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/01/22 09:27:26 by lsoulier          #+#    #+#             */
-/*   Updated: 2021/01/22 09:27:37 by lsoulier         ###   ########.fr       */
+/*   Created: 2021/02/18 00:07:18 by lsoulier          #+#    #+#             */
+/*   Updated: 2021/02/18 00:07:19 by lsoulier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,4 +48,16 @@ int	invalid_arg_nb(void)
 	printf("4. time_to_sleep (ms)\n");
 	printf("5. (optional) number_of_time_each_philosophers_must_eat\n");
 	return (EXIT_FAILURE);
+}
+
+void *thread_error(int code)
+{
+	char **errors;
+
+	errors = (char *[TOTAL_THREAD_ERRORS]){"Creating thread went wrong",
+		"Opening semaphore went wrong", "Closing semaphore went wrong",
+		"Unlinking semaphore went wrong", "Posting semaphore went wrong",
+		"Waiting semaphore went wrong", "Detaching thread went wrong"};
+	printf("Error\n%s\n", errors[code]);
+	return (NULL);
 }

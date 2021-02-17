@@ -3,46 +3,56 @@
 /*                                                        :::      ::::::::   */
 /*   semaphores.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lsoulier <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: lsoulier <lsoulier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/01/22 09:47:51 by lsoulier          #+#    #+#             */
-/*   Updated: 2021/01/22 09:48:01 by lsoulier         ###   ########.fr       */
+/*   Created: 2021/02/18 00:08:26 by lsoulier          #+#    #+#             */
+/*   Updated: 2021/02/18 00:08:29 by lsoulier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_two.h"
 
-int	init_forks(t_data *philo_data)
-{
-	t_fork *forks;
-
-	unlink_forks();
-	forks = &(philo_data->forks);
-	forks->nb_forks_available = sem_open("forks", O_RDWR | O_CREAT,
-		0664, philo_data->nb_forks);
-	if (forks->nb_forks_available == SEM_FAILED)
-		return (0);
-	forks->can_take_a_fork = sem_open("can_take", O_RDWR | O_CREAT,
-		0664, philo_data->nb_forks - 1);
-	if (forks->can_take_a_fork == SEM_FAILED)
-	{
-		sem_close(philo_data->forks.nb_forks_available);
-		unlink_forks();
-		return (0);
-	}
-	return (1);
-}
-
-int	delete_forks(t_data *philo_data)
-{
-	sem_close(philo_data->forks.nb_forks_available);
-	sem_close(philo_data->forks.can_take_a_fork);
-	unlink_forks();
-	return (1);
-}
-
-void unlink_forks(void)
+void unlink_semaphores(void)
 {
 	sem_unlink("forks");
-	sem_unlink("can_take");
+	sem_unlink("output");
+	sem_unlink("is dead");
+}
+
+int delete_semaphores(t_data *philo_data)
+{
+	if(sem_close(philo_data->forks) != 0)
+		thread_error(SEM_CLOSE_ERROR);
+	if(sem_close(philo_data->output) != 0)
+		thread_error(SEM_CLOSE_ERROR);
+	if(sem_close(philo_data->is_dead) != 0)
+		thread_error(SEM_CLOSE_ERROR);
+	unlink_semaphores();
+	return (0);
+}
+
+int init_semaphores(t_data *philo_data)
+{
+	unlink_semaphores();
+	philo_data->forks = sem_open("forks", O_RDWR | O_CREAT, 0664, philo_data->nb_forks);
+	if (philo_data->forks == SEM_FAILED)
+	{
+		thread_error(SEM_OPEN_ERROR);
+		return(delete_semaphores(philo_data));
+	}
+	philo_data->output = sem_open("output", O_RDWR | O_CREAT, 0664, 1);
+	if (philo_data->output == SEM_FAILED)
+	{
+		thread_error(SEM_OPEN_ERROR);
+		return(delete_semaphores(philo_data));
+	}
+	philo_data->is_dead = sem_open("is dead", O_RDWR | O_CREAT, 0664, 1);
+	if (philo_data->is_dead == SEM_FAILED)
+	{
+		thread_error(SEM_OPEN_ERROR);
+		return(delete_semaphores(philo_data));
+	}
+	if(sem_wait(philo_data->is_dead) != 0)
+		thread_error(SEM_WAIT_ERROR);
+	return (1);
 }

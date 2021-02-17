@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lsoulier <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: lsoulier <lsoulier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/01/22 09:18:36 by lsoulier          #+#    #+#             */
-/*   Updated: 2021/01/22 09:18:46 by lsoulier         ###   ########.fr       */
+/*   Created: 2021/02/18 00:07:24 by lsoulier          #+#    #+#             */
+/*   Updated: 2021/02/18 00:07:25 by lsoulier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,8 @@ int	main(int argc, char **argv)
 			return (EXIT_FAILURE);
 		if (!load_threads(&philo_data))
 			return (delete_data(&philo_data) + EXIT_FAILURE);
-		while (philo_loop(&philo_data))
-			;
+		if(sem_wait(philo_data.is_dead) != 0)
+			thread_error(SEM_POST_ERROR);
 		delete_data(&philo_data);
 	}
 	else

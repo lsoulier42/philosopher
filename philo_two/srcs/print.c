@@ -3,29 +3,29 @@
 /*                                                        :::      ::::::::   */
 /*   print.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lsoulier <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: lsoulier <lsoulier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/01/22 09:38:28 by lsoulier          #+#    #+#             */
-/*   Updated: 2021/01/22 09:38:40 by lsoulier         ###   ########.fr       */
+/*   Created: 2021/02/18 00:07:31 by lsoulier          #+#    #+#             */
+/*   Updated: 2021/02/18 00:07:33 by lsoulier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_two.h"
 
-void	print_state(long ts, int num, char state)
+void	print_state(t_philo *philo, int is_dead)
 {
-	char	*output;
+	char	**outputs;
 
-	output = "";
-	if (state == EAT)
-		output = "is eating";
-	else if (state == SLEEP)
-		output = "is sleeping";
-	else if (state == THINK)
-		output = "is thinking";
-	else if (state == DEAD)
-		output = "died";
-	else if (state == HAS_FORKS)
-		output = "has taken a fork";
-	printf("%ld %d %s\n", ts, num, output);
+	outputs = (char *[TOTAL_STATES]){"is eating", "is sleeping",
+		"is thinking", "has taken a fork", "died"};
+	if (sem_wait(philo->output) != 0)
+		thread_error(SEM_WAIT_ERROR);
+	else
+	{
+		printf("%ld %d %s\n", get_timestamp(philo->start_ts),
+			philo->num, outputs[philo->state]);
+		if (!is_dead)
+			if (sem_post(philo->output) != 0)
+				thread_error(SEM_POST_ERROR);
+	}
 }
