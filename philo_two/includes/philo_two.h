@@ -109,6 +109,7 @@ int					delete_semaphores(t_data *philo_data);
 void				unlink_semaphores(void);
 
 long				get_timestamp(long start_ts);
+void				ft_usleep(int duration);
 void				print_state(t_philo *philo, int is_dead);
 
 #endif
