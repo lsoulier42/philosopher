@@ -1,5 +1,5 @@
 NAME= philo_three
-SRCS= main.c data.c errors.c utils.c process.c semaphores.c routine.c philo_loop.c print.c
+SRCS= main.c data.c utils.c errors.c processes.c routine.c semaphores.c print.c
 OBJS= $(addprefix srcs/,$(SRCS:.c=.o))
 CC= gcc
 CFLAGS= -Wall -Werror -Wextra
