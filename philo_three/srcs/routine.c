@@ -17,22 +17,19 @@ void	*routine_death(void *philo_void)
 	t_philo *philo;
 
 	philo = (t_philo*)philo_void;
-	while (*(philo->nb_finished) != philo->nb_philo)
+	while (philo->nb_meal_taken != philo->nb_meal_max)
 	{
 		if ((philo->time_to_die
 			< get_timestamp(philo->start_ts) - philo->last_eat_date)
 			&& philo->state != EAT)
 		{
 			philo->state = DEAD;
-			if (*(philo->nb_finished) != philo->nb_philo)
-			{
-				print_state(philo, 1);
-				*(philo->nb_finished) = philo->nb_philo;
-			}
+			print_state(philo, 1);
+			philo->nb_meal_taken = philo->nb_meal_max;
 		}
 		usleep(10);
 	}
-	return (NULL);
+	exit(philo->state);
 }
 
 void	routine_eat(t_philo *philo)
@@ -48,20 +45,12 @@ void	routine_eat(t_philo *philo)
 	}
 }
 
-void	philo_loop(t_philo *philo, int *nb_meals)
+void	philo_loop(t_philo *philo)
 {
 	if (philo->state == THINK)
 	{
 		routine_eat(philo);
-		*(nb_meals) += 1;
-		if (*nb_meals == philo->nb_meal_max)
-		{
-			if (sem_wait(philo->output) == 0)
-			{
-				*(philo->nb_finished) += 1;
-				sem_post(philo->output);
-			}
-		}
+		philo->nb_meal_taken += 1;
 	}
 	else if (philo->state == EAT)
 	{
@@ -76,25 +65,19 @@ void	philo_loop(t_philo *philo, int *nb_meals)
 	}
 }
 
-void	*philo_routine(void *philo_void)
+int		philo_routine(t_philo *philo)
 {
-	t_philo		*philo;
 	pthread_t	death;
-	int			nb_meals;
 
-	philo = (t_philo*)philo_void;
 	philo->start_ts = get_timestamp(0);
-	nb_meals = 0;
 	if (pthread_create(&death, NULL, &routine_death, philo) != 0)
-		return (thread_error(CREATE_THREAD_ERROR));
-	while (*(philo->nb_finished) != philo->nb_philo)
+		return (thread_error(CREATE_THREAD_ERROR) != NULL);
+	while (philo->nb_meal_taken != philo->nb_meal_max)
 	{
-		philo_loop(philo, &nb_meals);
+		philo_loop(philo);
 		usleep(10);
 	}
-	if (*(philo->nb_finished) == philo->nb_philo)
-		sem_post(philo->is_dead);
 	if (pthread_detach(death) != 0)
 		thread_error(DETACH_THREAD_ERROR);
-	return (NULL);
+	exit(philo->state);
 }

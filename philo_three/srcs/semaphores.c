@@ -18,18 +18,13 @@ void	unlock_semaphores(t_data *philo_data)
 
 	i = -(philo_data->nb_philo);
 	while (++i < philo_data->nb_philo)
-	{
 		sem_post(philo_data->forks);
-		sem_post(philo_data->output);
-		sem_post(philo_data->is_dead);
-	}
 }
 
 void	unlink_semaphores(void)
 {
 	sem_unlink("forks");
 	sem_unlink("output");
-	sem_unlink("is dead");
 }
 
 int		delete_semaphores(t_data *philo_data)
@@ -38,8 +33,6 @@ int		delete_semaphores(t_data *philo_data)
 	if (sem_close(philo_data->forks) != 0)
 		thread_error(SEM_CLOSE_ERROR);
 	if (sem_close(philo_data->output) != 0)
-		thread_error(SEM_CLOSE_ERROR);
-	if (sem_close(philo_data->is_dead) != 0)
 		thread_error(SEM_CLOSE_ERROR);
 	unlink_semaphores();
 	return (0);
@@ -61,13 +54,5 @@ int		init_semaphores(t_data *philo_data)
 		thread_error(SEM_OPEN_ERROR);
 		return (delete_semaphores(philo_data));
 	}
-	philo_data->is_dead = sem_open("is dead", O_RDWR | O_CREAT, 0664, 1);
-	if (philo_data->is_dead == SEM_FAILED)
-	{
-		thread_error(SEM_OPEN_ERROR);
-		return (delete_semaphores(philo_data));
-	}
-	if (sem_wait(philo_data->is_dead) != 0)
-		thread_error(SEM_WAIT_ERROR);
 	return (1);
 }

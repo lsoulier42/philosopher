@@ -55,7 +55,6 @@ int	init_data(t_data *philo_data, int argc, char **argv)
 	philo_data->nb_meal_max = UNLIMITED_MEAL;
 	if (argc == 6)
 		philo_data->nb_meal_max = ft_atoi(argv[5]);
-	philo_data->nb_finished = 0;
 	philo_data->philosophers_processes = NULL;
 	philo_data->philosophers = NULL;
 	if (!alloc_struct(philo_data))

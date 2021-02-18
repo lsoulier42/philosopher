@@ -42,8 +42,6 @@ typedef enum		e_thread_errors
 	CREATE_THREAD_ERROR,
 	SEM_OPEN_ERROR,
 	SEM_CLOSE_ERROR,
-	SEM_POST_ERROR,
-	SEM_WAIT_ERROR,
 	DETACH_THREAD_ERROR,
 	FORK_ERROR,
 	TOTAL_THREAD_ERRORS
@@ -57,13 +55,11 @@ typedef struct		s_philo
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				nb_meal_max;
+	int				nb_meal_taken;
 	long			last_eat_date;
 	long			start_ts;
-	int				*nb_finished;
-	int				nb_philo;
 	sem_t			*forks;
 	sem_t			*output;
-	sem_t			*is_dead;
 }					t_philo;
 
 typedef struct		s_data
@@ -74,10 +70,8 @@ typedef struct		s_data
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				nb_meal_max;
-	int				nb_finished;
 	sem_t			*forks;
 	sem_t			*output;
-	sem_t			*is_dead;
 	pid_t			*philosophers_processes;
 	t_philo			*philosophers;
 }					t_data;
@@ -102,14 +96,15 @@ int					load_processes(t_data *philo_data);
 int					delete_processes(t_data *philo_data);
 void				*thread_error(int code);
 
-void				*philo_routine(void *philo_data_void);
-void				philo_loop(t_philo *philo, int *nb_meals);
+int					philo_routine(t_philo *philo);
+void				philo_loop(t_philo *philo);
 void				routine_eat(t_philo *philo);
 void				*routine_death(void *philo_void);
 
 int					init_semaphores(t_data *philo_data);
 int					delete_semaphores(t_data *philo_data);
 void				unlink_semaphores(void);
+void				unlock_semaphores(t_data *philo_data);
 
 long				get_timestamp(long start_ts);
 void				print_state(t_philo *philo, int is_dead);

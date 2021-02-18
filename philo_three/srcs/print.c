@@ -20,7 +20,7 @@ void	print_state(t_philo *philo, int is_dead)
 	outputs = (char *[TOTAL_STATES]){"is eating", "is sleeping",
 		"is thinking", "has taken a fork", "died"};
 	if (sem_wait(philo->output) == 0
-		&& *(philo->nb_finished) != philo->nb_philo)
+		&& philo->nb_meal_taken != philo->nb_meal_max)
 	{
 		ts = get_timestamp(philo->start_ts);
 		if (philo->state != EAT)
@@ -30,7 +30,7 @@ void	print_state(t_philo *philo, int is_dead)
 			philo->num, outputs[HAS_FORKS], ts,
 			philo->num, outputs[HAS_FORKS], ts,
 			philo->num, outputs[EAT]);
-		if (!is_dead && *(philo->nb_finished) != philo->nb_philo)
+		if (!is_dead)
 			sem_post(philo->output);
 	}
 }
