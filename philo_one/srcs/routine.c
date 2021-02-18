@@ -93,10 +93,7 @@ void	*philo_routine(void *philo_void)
 	if (pthread_create(&death, NULL, &routine_death, philo) != 0)
 		return (thread_error(CREATE_THREAD_ERROR));
 	while (*(philo->nb_finished) != philo->nb_philo)
-	{
 		philo_loop(philo, &nb_meals);
-		usleep(10);
-	}
 	if (*(philo->nb_finished) == philo->nb_philo)
 		pthread_mutex_unlock(philo->is_dead);
 	if (pthread_detach(death) != 0)
