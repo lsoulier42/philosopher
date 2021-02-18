@@ -12,12 +12,12 @@
 
 #include "philo_one.h"
 
-void *routine_death(void *philo_void)
+void	*routine_death(void *philo_void)
 {
 	t_philo *philo;
 
 	philo = (t_philo*)philo_void;
-	while(*(philo->nb_finished) != philo->nb_philo)
+	while (*(philo->nb_finished) != philo->nb_philo)
 	{
 		if ((philo->time_to_die
 			< get_timestamp(philo->start_ts) - philo->last_eat_date)
@@ -35,41 +35,23 @@ void *routine_death(void *philo_void)
 	return (NULL);
 }
 
-void	routine_actually_eat(t_philo *philo)
-{
-	print_state(philo, 0);
-	philo->last_eat_date = get_timestamp(philo->start_ts);
-	philo->state = EAT;
-	print_state(philo, 0);
-	usleep(philo->time_to_eat * 1000);
-	if(pthread_mutex_unlock(philo->forks[LEFT]) != 0)
-		thread_error(MUTEX_UNLOCK_ERROR);
-	if(pthread_mutex_unlock(philo->forks[RIGHT]) != 0)
-		thread_error(MUTEX_UNLOCK_ERROR);
-}
-
 void	routine_eat(t_philo *philo)
 {
 	int first_fork;
 	int second_fork;
 
-	first_fork = LEFT;
-	if (philo->num % 2 == 0)
-		first_fork = RIGHT;
-	if (pthread_mutex_lock(philo->forks[first_fork]) == 0)
+	first_fork = philo->num % 2 == 0 ? RIGHT : LEFT;
+	second_fork = first_fork == RIGHT ? LEFT : RIGHT;
+	if (pthread_mutex_lock(philo->forks[first_fork]) == 0
+		&& pthread_mutex_lock(philo->forks[second_fork]) == 0)
 	{
-		philo->state = HAS_FORKS;
+		philo->state = EAT;
+		philo->last_eat_date = get_timestamp(philo->start_ts);
 		print_state(philo, 0);
-		second_fork = first_fork + 1;
-		if (second_fork == 2)
-			second_fork = 0;
-		if (pthread_mutex_lock(philo->forks[second_fork]) == 0)
-			routine_actually_eat(philo);
-		else
-			thread_error(MUTEX_LOCK_ERROR);
+		usleep(philo->time_to_eat * 1000);
+		pthread_mutex_unlock(philo->forks[LEFT]);
+		pthread_mutex_unlock(philo->forks[RIGHT]);
 	}
-	else
-		thread_error(MUTEX_LOCK_ERROR);
 }
 
 void	philo_loop(t_philo *philo, int *nb_meals)
@@ -80,11 +62,10 @@ void	philo_loop(t_philo *philo, int *nb_meals)
 		*(nb_meals) += 1;
 		if (*nb_meals == philo->nb_meal_max)
 		{
-			if(pthread_mutex_lock(philo->output) != 0)
+			if (pthread_mutex_lock(philo->output) != 0)
 				thread_error(MUTEX_LOCK_ERROR);
 			*(philo->nb_finished) += 1;
-			if(pthread_mutex_unlock(philo->output) != 0)
-				thread_error(MUTEX_UNLOCK_ERROR);
+			pthread_mutex_unlock(philo->output);
 		}
 	}
 	else if (philo->state == EAT)
@@ -111,14 +92,13 @@ void	*philo_routine(void *philo_void)
 	nb_meals = 0;
 	if (pthread_create(&death, NULL, &routine_death, philo) != 0)
 		return (thread_error(CREATE_THREAD_ERROR));
-	while(*(philo->nb_finished) != philo->nb_philo)
+	while (*(philo->nb_finished) != philo->nb_philo)
 	{
 		philo_loop(philo, &nb_meals);
 		usleep(10);
 	}
 	if (*(philo->nb_finished) == philo->nb_philo)
-		if (pthread_mutex_unlock(philo->is_dead) != 0)
-			thread_error(MUTEX_UNLOCK_ERROR);
+		pthread_mutex_unlock(philo->is_dead);
 	if (pthread_detach(death) != 0)
 		thread_error(DETACH_THREAD_ERROR);
 	return (NULL);

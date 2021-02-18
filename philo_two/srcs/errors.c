@@ -12,7 +12,7 @@
 
 #include "philo_two.h"
 
-int	check_args(int argc, char **argv)
+int		check_args(int argc, char **argv)
 {
 	int i;
 
@@ -27,19 +27,19 @@ int	check_args(int argc, char **argv)
 	return (1);
 }
 
-int	invalid_arg_num(char *arg)
+int		invalid_arg_num(char *arg)
 {
 	printf("Error.\nThis argument is not numeric: `%s'\n", arg);
 	return (0);
 }
 
-int	invalid_arg_neg(char *arg)
+int		invalid_arg_neg(char *arg)
 {
 	printf("Error.\nThis argument is negative: `%s'\n", arg);
 	return (0);
 }
 
-int	invalid_arg_nb(void)
+int		invalid_arg_nb(void)
 {
 	printf("Error.\nInvalid number of arguments :\n");
 	printf("1. number_of_philosopher\n");
@@ -50,14 +50,14 @@ int	invalid_arg_nb(void)
 	return (EXIT_FAILURE);
 }
 
-void *thread_error(int code)
+void	*thread_error(int code)
 {
 	char **errors;
 
 	errors = (char *[TOTAL_THREAD_ERRORS]){"Creating thread went wrong",
 		"Opening semaphore went wrong", "Closing semaphore went wrong",
-		"Unlinking semaphore went wrong", "Posting semaphore went wrong",
-		"Waiting semaphore went wrong", "Detaching thread went wrong"};
+		"Posting semaphore went wrong", "Waiting semaphore went wrong",
+		"Detaching thread went wrong"};
 	printf("Error\n%s\n", errors[code]);
 	return (NULL);
 }

@@ -15,17 +15,20 @@
 void	print_state(t_philo *philo, int is_dead)
 {
 	char	**outputs;
+	long	ts;
 
 	outputs = (char *[TOTAL_STATES]){"is eating", "is sleeping",
 		"is thinking", "has taken a fork", "died"};
-	if (pthread_mutex_lock(philo->output) != 0)
-		thread_error(MUTEX_LOCK_ERROR);
-	else
+	if (pthread_mutex_lock(philo->output) == 0)
 	{
-		printf("%ld %d %s\n", get_timestamp(philo->start_ts),
-			philo->num, outputs[philo->state]);
+		ts = get_timestamp(philo->start_ts);
+		if (philo->state != EAT)
+			printf("%ld %d %s\n", ts, philo->num, outputs[philo->state]);
+		else
+			printf("%ld %d %s\n%ld %d %s\n%ld %d %s\n", ts,
+				philo->num, outputs[HAS_FORKS], ts,
+				philo->num, outputs[HAS_FORKS], ts, philo->num, outputs[EAT]);
 		if (!is_dead)
-			if (pthread_mutex_unlock(philo->output) != 0)
-				thread_error(MUTEX_UNLOCK_ERROR);
+			pthread_mutex_unlock(philo->output);
 	}
 }

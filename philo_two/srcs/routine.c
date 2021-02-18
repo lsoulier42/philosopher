@@ -12,12 +12,12 @@
 
 #include "philo_two.h"
 
-void *routine_death(void *philo_void)
+void	*routine_death(void *philo_void)
 {
 	t_philo *philo;
 
 	philo = (t_philo*)philo_void;
-	while(*(philo->nb_finished) != philo->nb_philo)
+	while (*(philo->nb_finished) != philo->nb_philo)
 	{
 		if ((philo->time_to_die
 			< get_timestamp(philo->start_ts) - philo->last_eat_date)
@@ -37,27 +37,15 @@ void *routine_death(void *philo_void)
 
 void	routine_eat(t_philo *philo)
 {
-	if (sem_wait(philo->forks) == 0)
+	if (sem_wait(philo->forks) == 0 && sem_wait(philo->forks) == 0)
 	{
-		philo->state = HAS_FORKS;
+		philo->state = EAT;
+		philo->last_eat_date = get_timestamp(philo->start_ts);
 		print_state(philo, 0);
-		if (sem_wait(philo->forks) == 0)
-		{
-			print_state(philo, 0);
-			philo->last_eat_date = get_timestamp(philo->start_ts);
-			philo->state = EAT;
-			print_state(philo, 0);
-			usleep(philo->time_to_eat * 1000);
-			if(sem_post(philo->forks) != 0)
-				thread_error(SEM_POST_ERROR);
-			if(sem_post(philo->forks) != 0)
-				thread_error(SEM_POST_ERROR);
-		}
-		else
-			thread_error(SEM_WAIT_ERROR);
+		usleep(philo->time_to_eat * 1000);
+		sem_post(philo->forks);
+		sem_post(philo->forks);
 	}
-	else
-		thread_error(SEM_WAIT_ERROR);
 }
 
 void	philo_loop(t_philo *philo, int *nb_meals)
@@ -68,11 +56,11 @@ void	philo_loop(t_philo *philo, int *nb_meals)
 		*(nb_meals) += 1;
 		if (*nb_meals == philo->nb_meal_max)
 		{
-			if(sem_wait(philo->output) != 0)
-				thread_error(SEM_WAIT_ERROR);
-			*(philo->nb_finished) += 1;
-			if(sem_post(philo->output) != 0)
-				thread_error(SEM_POST_ERROR);
+			if (sem_wait(philo->output) == 0)
+			{
+				*(philo->nb_finished) += 1;
+				sem_post(philo->output);
+			}
 		}
 	}
 	else if (philo->state == EAT)
@@ -99,14 +87,13 @@ void	*philo_routine(void *philo_void)
 	nb_meals = 0;
 	if (pthread_create(&death, NULL, &routine_death, philo) != 0)
 		return (thread_error(CREATE_THREAD_ERROR));
-	while(*(philo->nb_finished) != philo->nb_philo)
+	while (*(philo->nb_finished) != philo->nb_philo)
 	{
 		philo_loop(philo, &nb_meals);
 		usleep(10);
 	}
 	if (*(philo->nb_finished) == philo->nb_philo)
-		if (sem_post(philo->is_dead) != 0)
-			thread_error(SEM_POST_ERROR);
+		sem_post(philo->is_dead);
 	if (pthread_detach(death) != 0)
 		thread_error(DETACH_THREAD_ERROR);
 	return (NULL);

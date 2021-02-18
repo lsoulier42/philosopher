@@ -24,7 +24,7 @@ int	main(int argc, char **argv)
 			return (EXIT_FAILURE);
 		if (!load_threads(&philo_data))
 			return (delete_data(&philo_data) + EXIT_FAILURE);
-		if(sem_wait(philo_data.is_dead) != 0)
+		if (sem_wait(philo_data.is_dead) != 0)
 			thread_error(SEM_POST_ERROR);
 		delete_data(&philo_data);
 	}

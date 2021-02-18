@@ -12,18 +12,18 @@
 
 #include "philo_two.h"
 
-int	ft_isdigit(int c)
+int		ft_isdigit(int c)
 {
 	return (c >= '0' && c <= '9');
 }
 
-int	ft_isspace(char c)
+int		ft_isspace(char c)
 {
 	return (c == ' ' || c == '\f' || c == '\n'
 			|| c == '\r' || c == '\t' || c == '\v');
 }
 
-int	ft_isnum(char *str)
+int		ft_isnum(char *str)
 {
 	int	i;
 
@@ -36,7 +36,7 @@ int	ft_isnum(char *str)
 	return (1);
 }
 
-int	ft_atoi(const char *str)
+int		ft_atoi(const char *str)
 {
 	int	i;
 	int	sign;

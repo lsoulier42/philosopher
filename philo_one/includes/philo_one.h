@@ -43,8 +43,6 @@ typedef enum		e_thread_errors
 	CREATE_THREAD_ERROR,
 	MUTEX_INIT_ERROR,
 	MUTEX_LOCK_ERROR,
-	MUTEX_UNLOCK_ERROR,
-	MUTEX_DESTROY_ERROR,
 	DETACH_THREAD_ERROR,
 	TOTAL_THREAD_ERRORS
 }					t_thread_errors;
@@ -59,25 +57,25 @@ typedef struct		s_philo
 	int				nb_meal_max;
 	long			last_eat_date;
 	long			start_ts;
-	int 			*nb_finished;
-	int 			nb_philo;
+	int				*nb_finished;
+	int				nb_philo;
 	pthread_mutex_t	*forks[2];
-	pthread_mutex_t *output;
-	pthread_mutex_t *is_dead;
+	pthread_mutex_t	*output;
+	pthread_mutex_t	*is_dead;
 }					t_philo;
 
 typedef struct		s_data
 {
 	int				nb_philo;
-	int 			nb_forks;
+	int				nb_forks;
 	int				time_to_die;
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				nb_meal_max;
 	int				nb_finished;
 	pthread_mutex_t	*forks;
-	pthread_mutex_t output;
-	pthread_mutex_t is_dead;
+	pthread_mutex_t	output;
+	pthread_mutex_t	is_dead;
 	pthread_t		*philosophers_threads;
 	t_philo			*philosophers;
 }					t_data;
@@ -100,12 +98,12 @@ int					ft_isdigit(int c);
 int					init_philosophers(t_data *philo_data);
 int					load_threads(t_data *philo_data);
 int					delete_threads(t_data *philo_data);
-void 				*thread_error(int code);
+void				*thread_error(int code);
 
 void				*philo_routine(void *philo_data_void);
 void				philo_loop(t_philo *philo, int *nb_meals);
 void				routine_eat(t_philo *philo);
-void 				*routine_death(void *philo_void);
+void				*routine_death(void *philo_void);
 
 int					init_mutexes(t_data *philo_data);
 int					delete_mutexes(t_data *philo_data);

@@ -12,7 +12,7 @@
 
 #include "philo_one.h"
 
-int 	init_philosophers(t_data *philo_data)
+int		init_philosophers(t_data *philo_data)
 {
 	int		i;
 	t_philo	*current;
@@ -45,7 +45,7 @@ int		load_threads(t_data *philo_data)
 	int i;
 
 	i = -1;
-	while(++i < philo_data->nb_philo)
+	while (++i < philo_data->nb_philo)
 	{
 		if (pthread_create(philo_data->philosophers_threads + i,
 			NULL, &philo_routine, philo_data->philosophers + i) != 0)
@@ -57,12 +57,12 @@ int		load_threads(t_data *philo_data)
 	return (1);
 }
 
-int delete_threads(t_data *philo_data)
+int		delete_threads(t_data *philo_data)
 {
 	int i;
 
 	i = -1;
-	while(++i < philo_data->nb_philo)
+	while (++i < philo_data->nb_philo)
 		pthread_detach(philo_data->philosophers_threads[i]);
 	return (0);
 }

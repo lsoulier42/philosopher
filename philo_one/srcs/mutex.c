@@ -12,15 +12,15 @@
 
 #include "philo_one.h"
 
-int delete_mutexes(t_data *philo_data)
+int	delete_mutexes(t_data *philo_data)
 {
 	int i;
 
 	i = -1;
-	while(++i < philo_data->nb_forks)
+	while (++i < philo_data->nb_forks)
 		pthread_mutex_unlock(philo_data->forks + i);
 	i = -1;
-	while(++i < philo_data->nb_forks)
+	while (++i < philo_data->nb_forks)
 	{
 		pthread_mutex_unlock(philo_data->forks + i);
 		pthread_mutex_destroy(philo_data->forks + i);
@@ -31,12 +31,12 @@ int delete_mutexes(t_data *philo_data)
 	return (0);
 }
 
-int init_mutexes(t_data *philo_data)
+int	init_mutexes(t_data *philo_data)
 {
 	int i;
 
 	i = -1;
-	while(++i < philo_data->nb_forks)
+	while (++i < philo_data->nb_forks)
 	{
 		if (pthread_mutex_init(philo_data->forks + i, NULL) != 0)
 		{

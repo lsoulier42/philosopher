@@ -42,7 +42,7 @@ int	init_struct(t_data *philo_data)
 
 int	free_struct(t_data *philo_data)
 {
-	if(philo_data->forks)
+	if (philo_data->forks)
 		free(philo_data->forks);
 	if (philo_data->philosophers_threads)
 		free(philo_data->philosophers_threads);
