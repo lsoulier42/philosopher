@@ -109,6 +109,8 @@ int					init_mutexes(t_data *philo_data);
 int					delete_mutexes(t_data *philo_data);
 
 long				get_timestamp(long start_ts);
+void 				ft_usleep(int duration);
+
 void				print_state(t_philo *philo, int is_dead);
 
 #endif

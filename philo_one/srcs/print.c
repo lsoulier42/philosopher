@@ -12,6 +12,8 @@
 
 #include "philo_one.h"
 
+
+
 void	print_state(t_philo *philo, int is_dead)
 {
 	char	**outputs;

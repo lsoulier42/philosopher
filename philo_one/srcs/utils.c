@@ -60,11 +60,3 @@ int		ft_atoi(const char *str)
 	}
 	return (r_val * sign);
 }
-
-long	get_timestamp(long start_ts)
-{
-	struct timeval	tv;
-
-	gettimeofday(&tv, NULL);
-	return (((tv.tv_sec * 1000) + tv.tv_usec / 1000) - start_ts);
-}
