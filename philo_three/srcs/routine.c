@@ -39,7 +39,7 @@ void	routine_eat(t_philo *philo)
 		philo->state = EAT;
 		philo->last_eat_date = get_timestamp(philo->start_ts);
 		print_state(philo, 0);
-		usleep(philo->time_to_eat * 1000);
+		ft_usleep(philo->time_to_eat);
 		sem_post(philo->forks);
 		sem_post(philo->forks);
 	}
@@ -56,7 +56,7 @@ void	philo_loop(t_philo *philo)
 	{
 		philo->state = SLEEP;
 		print_state(philo, 0);
-		usleep(philo->time_to_sleep * 1000);
+		ft_usleep(philo->time_to_sleep);
 	}
 	else if (philo->state == SLEEP)
 	{
