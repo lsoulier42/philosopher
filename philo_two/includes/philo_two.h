@@ -22,7 +22,6 @@
 # include <fcntl.h>
 # include <sys/stat.h>
 # include <limits.h>
-# define UNLIMITED_MEAL -1
 # define MIN_NB_ARGS 5
 # define MAX_NB_ARGS 6
 
