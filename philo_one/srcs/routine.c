@@ -38,8 +38,7 @@ void	*philo_routine(void *philo_void)
 
 	philo = (t_philo*)philo_void;
 	philo->start_ts = get_timestamp(0);
-	while (philo->state != DEAD
-		&& philo->nb_meal != philo->nb_meal_max)
+	while (!(philo->is_finished))
 	{
 		if (philo->state == THINK)
 			routine_eat(philo);
@@ -54,7 +53,8 @@ void	*philo_routine(void *philo_void)
 			philo->state = THINK;
 			print_state(philo, 0);
 		}
+		philo->is_finished = philo->state == DEAD
+			|| philo->nb_meal >= philo->nb_meal_max;
 	}
-	philo->is_finished = 1;
 	return (NULL);
 }

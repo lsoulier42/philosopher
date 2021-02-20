@@ -18,7 +18,7 @@
 # include <stdlib.h>
 # include <sys/time.h>
 # include <pthread.h>
-# define UNLIMITED_MEAL -1
+# include <limits.h>
 # define MIN_NB_ARGS 5
 # define MAX_NB_ARGS 6
 

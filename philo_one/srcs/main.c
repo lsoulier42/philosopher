@@ -18,6 +18,7 @@ void	monitor_loop(t_data *philo_data, long start_ts)
 	int		i;
 
 	i = -1;
+	philo_data->nb_finished = 0;
 	while (++i < philo_data->nb_philo)
 	{
 		current = philo_data->philosophers + i;
@@ -30,11 +31,7 @@ void	monitor_loop(t_data *philo_data, long start_ts)
 			philo_data->nb_finished = philo_data->nb_philo;
 			break ;
 		}
-		if (current->is_finished == 1)
-		{
-			philo_data->nb_finished += 1;
-			current->is_finished = 2;
-		}
+		philo_data->nb_finished += current->is_finished;
 	}
 }
 
