@@ -20,7 +20,7 @@ long	get_timestamp(long start_ts)
 	return (((tv.tv_sec * 1000) + tv.tv_usec / 1000) - start_ts);
 }
 
-void	ft_usleep(int duration)
+void ft_usleep(int duration)
 {
 	long start;
 	long current;

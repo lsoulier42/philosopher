@@ -26,6 +26,8 @@ int	delete_mutexes(t_data *philo_data)
 		pthread_mutex_destroy(philo_data->forks + i);
 	}
 	pthread_mutex_destroy(&philo_data->output);
+	pthread_mutex_unlock(&philo_data->is_dead);
+	pthread_mutex_destroy(&philo_data->is_dead);
 	return (0);
 }
 
@@ -47,5 +49,12 @@ int	init_mutexes(t_data *philo_data)
 		thread_error(MUTEX_INIT_ERROR);
 		return (delete_mutexes(philo_data));
 	}
+	if (pthread_mutex_init(&philo_data->is_dead, NULL) != 0)
+	{
+		thread_error(MUTEX_INIT_ERROR);
+		return (delete_mutexes(philo_data));
+	}
+	if (pthread_mutex_lock(&philo_data->is_dead) != 0)
+		return (thread_error(MUTEX_LOCK_ERROR) != NULL);
 	return (1);
 }

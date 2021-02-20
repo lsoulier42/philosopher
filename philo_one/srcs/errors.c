@@ -55,7 +55,8 @@ void	*thread_error(int code)
 	char **errors;
 
 	errors = (char *[TOTAL_THREAD_ERRORS]){"Creating thread went wrong",
-		"Initializing mutex went wrong"};
+		"Initializing mutex went wrong", "Locking mutex went wrong",
+		"Detaching thread went wrong"};
 	printf("Error\n%s\n", errors[code]);
 	return (NULL);
 }

@@ -23,17 +23,19 @@ int		init_philosophers(t_data *philo_data)
 		current = philo_data->philosophers + i;
 		current->num = i + 1;
 		current->state = SLEEP;
+		current->time_to_die = philo_data->time_to_die;
 		current->time_to_eat = philo_data->time_to_eat;
 		current->time_to_sleep = philo_data->time_to_sleep;
 		current->nb_meal_max = philo_data->nb_meal_max;
-		current->nb_meal = 0;
 		current->last_eat_date = 0;
 		current->forks[LEFT] = philo_data->forks + i;
 		current->forks[RIGHT] = philo_data->forks + philo_data->nb_philo - 1;
 		if (i != 0)
 			current->forks[RIGHT] = philo_data->forks + i - 1;
 		current->output = &philo_data->output;
-		current->is_finished = 0;
+		current->is_dead = &philo_data->is_dead;
+		current->nb_finished = &philo_data->nb_finished;
+		current->nb_philo = philo_data->nb_philo;
 	}
 	return (1);
 }
