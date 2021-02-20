@@ -42,8 +42,6 @@ typedef enum		e_thread_errors
 {
 	CREATE_THREAD_ERROR,
 	MUTEX_INIT_ERROR,
-	MUTEX_LOCK_ERROR,
-	DETACH_THREAD_ERROR,
 	TOTAL_THREAD_ERRORS
 }					t_thread_errors;
 
@@ -51,17 +49,15 @@ typedef struct		s_philo
 {
 	int				num;
 	int				state;
-	int				time_to_die;
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				nb_meal_max;
-	long			last_eat_date;
+	int				nb_meal;
+	int				last_eat_date;
 	long			start_ts;
-	int				*nb_finished;
-	int				nb_philo;
+	int				is_finished;
 	pthread_mutex_t	*forks[2];
 	pthread_mutex_t	*output;
-	pthread_mutex_t	*is_dead;
 }					t_philo;
 
 typedef struct		s_data
@@ -75,7 +71,6 @@ typedef struct		s_data
 	int				nb_finished;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	output;
-	pthread_mutex_t	is_dead;
 	pthread_t		*philosophers_threads;
 	t_philo			*philosophers;
 }					t_data;
@@ -101,9 +96,7 @@ int					delete_threads(t_data *philo_data);
 void				*thread_error(int code);
 
 void				*philo_routine(void *philo_data_void);
-void				philo_loop(t_philo *philo, int *nb_meals);
 void				routine_eat(t_philo *philo);
-void				*routine_death(void *philo_void);
 
 int					init_mutexes(t_data *philo_data);
 int					delete_mutexes(t_data *philo_data);
@@ -112,5 +105,6 @@ long				get_timestamp(long start_ts);
 void				ft_usleep(int duration);
 
 void				print_state(t_philo *philo, int is_dead);
+void				monitor_loop(t_data *philo_data, long start_ts);
 
 #endif

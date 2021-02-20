@@ -15,7 +15,7 @@
 void	print_state(t_philo *philo, int is_dead)
 {
 	char	**outputs;
-	long	ts;
+	int		ts;
 
 	outputs = (char *[TOTAL_STATES]){"is eating", "is sleeping",
 		"is thinking", "has taken a fork", "died"};
@@ -23,9 +23,9 @@ void	print_state(t_philo *philo, int is_dead)
 	{
 		ts = get_timestamp(philo->start_ts);
 		if (philo->state != EAT)
-			printf("%ld %d %s\n", ts, philo->num, outputs[philo->state]);
+			printf("%d %d %s\n", ts, philo->num, outputs[philo->state]);
 		else
-			printf("%ld %d %s\n%ld %d %s\n%ld %d %s\n", ts,
+			printf("%d %d %s\n%d %d %s\n%d %d %s\n", ts,
 				philo->num, outputs[HAS_FORKS], ts,
 				philo->num, outputs[HAS_FORKS], ts, philo->num, outputs[EAT]);
 		if (!is_dead)
