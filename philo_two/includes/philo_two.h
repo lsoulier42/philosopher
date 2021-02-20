@@ -21,6 +21,7 @@
 # include <semaphore.h>
 # include <fcntl.h>
 # include <sys/stat.h>
+# include <limits.h>
 # define UNLIMITED_MEAL -1
 # define MIN_NB_ARGS 5
 # define MAX_NB_ARGS 6
@@ -40,9 +41,6 @@ typedef enum		e_thread_errors
 	CREATE_THREAD_ERROR,
 	SEM_OPEN_ERROR,
 	SEM_CLOSE_ERROR,
-	SEM_POST_ERROR,
-	SEM_WAIT_ERROR,
-	DETACH_THREAD_ERROR,
 	TOTAL_THREAD_ERRORS
 }					t_thread_errors;
 
@@ -50,17 +48,15 @@ typedef struct		s_philo
 {
 	int				num;
 	int				state;
-	int				time_to_die;
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				nb_meal_max;
+	int				nb_meal;
 	long			last_eat_date;
 	long			start_ts;
-	int				*nb_finished;
-	int				nb_philo;
+	int				is_finished;
 	sem_t			*forks;
 	sem_t			*output;
-	sem_t			*is_dead;
 }					t_philo;
 
 typedef struct		s_data
@@ -74,7 +70,6 @@ typedef struct		s_data
 	int				nb_finished;
 	sem_t			*forks;
 	sem_t			*output;
-	sem_t			*is_dead;
 	pthread_t		*philosophers_threads;
 	t_philo			*philosophers;
 }					t_data;
@@ -100,9 +95,7 @@ int					delete_threads(t_data *philo_data);
 void				*thread_error(int code);
 
 void				*philo_routine(void *philo_data_void);
-void				philo_loop(t_philo *philo, int *nb_meals);
 void				routine_eat(t_philo *philo);
-void				*routine_death(void *philo_void);
 
 int					init_semaphores(t_data *philo_data);
 int					delete_semaphores(t_data *philo_data);
@@ -110,6 +103,9 @@ void				unlink_semaphores(void);
 
 long				get_timestamp(long start_ts);
 void				ft_usleep(int duration);
-void				print_state(t_philo *philo, int is_dead);
+void				print_state(t_philo *philo,
+						int is_dead, t_data *philo_data);
+void				monitor_loop(t_data *philo_data, long start_ts);
+void				finish_philosophers(t_data *philo_data);
 
 #endif
