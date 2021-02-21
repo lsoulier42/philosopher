@@ -12,6 +12,31 @@
 
 #include "philo_one.h"
 
+int	monitor_loop(t_data *philo_data)
+{
+	int i;
+	int nb_finished;
+
+	nb_finished = 0;
+	i = -1;
+	while (++i < philo_data->nb_philo)
+	{
+		if (philo_data->philosophers[i].state == DEAD)
+		{
+			nb_finished = philo_data->nb_philo;
+			pthread_mutex_lock(&philo_data->output);
+			printf("%ld %d died\n",
+				get_timestamp(philo_data->philosophers[i].start_ts), i + 1);
+			i = -1;
+			while (++i < philo_data->nb_philo)
+				*(&philo_data->philosophers[i].is_finished) = 1;
+			break ;
+		}
+		nb_finished += philo_data->philosophers[i].is_finished;
+	}
+	return (nb_finished == philo_data->nb_philo);
+}
+
 int	main(int argc, char **argv)
 {
 	t_data	philo_data;
@@ -24,8 +49,8 @@ int	main(int argc, char **argv)
 			return (EXIT_FAILURE);
 		if (!load_threads(&philo_data))
 			return (delete_data(&philo_data) + EXIT_FAILURE);
-		if (pthread_mutex_lock(&philo_data.is_dead) != 0)
-			thread_error(MUTEX_LOCK_ERROR);
+		while (!monitor_loop(&philo_data))
+			usleep(100);
 		delete_data(&philo_data);
 	}
 	else

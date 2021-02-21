@@ -3,32 +3,61 @@
 /*                                                        :::      ::::::::   */
 /*   print.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lsoulier <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: lsoulier <lsoulier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/01/19 15:14:14 by lsoulier          #+#    #+#             */
-/*   Updated: 2021/01/19 15:16:22 by lsoulier         ###   ########.fr       */
+/*   Created: 2021/02/21 14:34:17 by lsoulier          #+#    #+#             */
+/*   Updated: 2021/02/21 14:34:18 by lsoulier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_one.h"
 
-void	print_state(t_philo *philo, int is_dead)
+char	*ft_itoa(int n)
 {
-	char	**outputs;
-	long	ts;
+	char	*str;
+	int		nb_char;
+	int		n_copy;
 
-	outputs = (char *[TOTAL_STATES]){"is eating", "is sleeping",
-		"is thinking", "has taken a fork", "died"};
-	if (pthread_mutex_lock(philo->output) == 0)
+	nb_char = 2;
+	n_copy = n;
+	while (n_copy / 10 != 0)
 	{
-		ts = get_timestamp(philo->start_ts);
-		if (philo->state != EAT)
-			printf("%ld %d %s\n", ts, philo->num, outputs[philo->state]);
-		else
-			printf("%ld %d %s\n%ld %d %s\n%ld %d %s\n", ts,
-				philo->num, outputs[HAS_FORKS], ts,
-				philo->num, outputs[HAS_FORKS], ts, philo->num, outputs[EAT]);
-		if (!is_dead)
-			pthread_mutex_unlock(philo->output);
+		nb_char++;
+		n_copy /= 10;
+	}
+	str = (char*)malloc(sizeof(char) * (nb_char + 1));
+	if (!str)
+		return (NULL);
+	str[nb_char] = '\0';
+	str[--nb_char] = ' ';
+	while (--nb_char >= 0)
+	{
+		str[nb_char] = n % 10 + '0';
+		n /= 10;
+	}
+	return (str);
+}
+
+void	print_state(int is_finished, char *ts_str, char *num_str, char *state)
+{
+	char	buffer[100];
+	int		i;
+	int		j;
+	int		k;
+
+	if (!is_finished)
+	{
+		i = -1;
+		j = -1;
+		k = -1;
+		while (ts_str[++i])
+			buffer[i] = ts_str[i];
+		while (num_str[++j])
+			buffer[i++] = num_str[j];
+		while (state[++k])
+			buffer[i++] = state[k];
+		buffer[i++] = '\n';
+		buffer[i] = '\0';
+		write(1, buffer, i);
 	}
 }

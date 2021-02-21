@@ -14,89 +14,111 @@
 
 void	*routine_death(void *philo_void)
 {
-	t_philo *philo;
+	t_philo	*philo;
+	int		ts;
 
 	philo = (t_philo*)philo_void;
-	while (*(philo->nb_finished) != philo->nb_philo)
+	while (philo->nb_meal != philo->nb_meal_max)
 	{
+		ts = get_timestamp(philo->start_ts);
 		if ((philo->time_to_die
-			< get_timestamp(philo->start_ts) - philo->last_eat_date)
+			< ts - philo->last_eat_date)
 			&& philo->state != EAT)
 		{
 			philo->state = DEAD;
-			if (*(philo->nb_finished) != philo->nb_philo)
-			{
-				print_state(philo, 1);
-				*(philo->nb_finished) = philo->nb_philo;
-			}
+			philo->nb_meal = philo->nb_meal_max;
+			philo->is_finished = 1;
+			break ;
 		}
-		usleep(10);
+		usleep(100);
 	}
 	return (NULL);
 }
 
-void	routine_eat(t_philo *philo)
+void	routine_think(t_philo *philo)
 {
-	int first_fork;
-	int second_fork;
+	char *ts_str;
+	char *num_str;
 
-	first_fork = philo->num % 2 == 0 ? RIGHT : LEFT;
-	second_fork = first_fork == RIGHT ? LEFT : RIGHT;
-	if (pthread_mutex_lock(philo->forks[first_fork]) == 0
-		&& pthread_mutex_lock(philo->forks[second_fork]) == 0)
+	pthread_mutex_lock(philo->output);
+	philo->state = THINK;
+	ts_str = ft_itoa(get_timestamp(philo->start_ts));
+	num_str = ft_itoa(philo->num);
+	if (ts_str && num_str)
 	{
-		philo->state = EAT;
-		philo->last_eat_date = get_timestamp(philo->start_ts);
-		print_state(philo, 0);
-		ft_usleep(philo->time_to_eat);
-		pthread_mutex_unlock(philo->forks[LEFT]);
-		pthread_mutex_unlock(philo->forks[RIGHT]);
+		print_state(philo->is_finished, ts_str, num_str, "is thinking");
+		free(ts_str);
+		free(num_str);
 	}
+	pthread_mutex_unlock(philo->output);
 }
 
-void	philo_loop(t_philo *philo, int *nb_meals)
+void	routine_sleep(t_philo *philo)
 {
-	if (philo->state == THINK)
+	char *ts_str;
+	char *num_str;
+
+	pthread_mutex_lock(philo->output);
+	philo->state = SLEEP;
+	ts_str = ft_itoa(get_timestamp(philo->start_ts));
+	num_str = ft_itoa(philo->num);
+	if (ts_str && num_str)
 	{
-		routine_eat(philo);
-		*(nb_meals) += 1;
-		if (*nb_meals == philo->nb_meal_max)
-		{
-			if (pthread_mutex_lock(philo->output) != 0)
-				thread_error(MUTEX_LOCK_ERROR);
-			*(philo->nb_finished) += 1;
-			pthread_mutex_unlock(philo->output);
-		}
+		print_state(philo->is_finished, ts_str, num_str, "is sleeping");
+		free(ts_str);
+		free(num_str);
 	}
-	else if (philo->state == EAT)
+	pthread_mutex_unlock(philo->output);
+	ft_usleep(philo->time_to_sleep);
+}
+
+void	routine_eat(t_philo *philo)
+{
+	char *ts_str;
+	char *num_str;
+
+	pthread_mutex_lock(philo->first_fork);
+	pthread_mutex_lock(philo->second_fork);
+	philo->state = EAT;
+	philo->nb_meal += 1;
+	philo->last_eat_date = get_timestamp(philo->start_ts);
+	pthread_mutex_lock(philo->output);
+	ts_str = ft_itoa(philo->last_eat_date);
+	num_str = ft_itoa(philo->num);
+	if (ts_str && num_str)
 	{
-		philo->state = SLEEP;
-		print_state(philo, 0);
-		ft_usleep(philo->time_to_sleep);
+		print_state(philo->is_finished, ts_str, num_str, "has taken a fork");
+		print_state(philo->is_finished, ts_str, num_str, "has taken a fork");
+		print_state(philo->is_finished, ts_str, num_str, "is eating");
+		free(ts_str);
+		free(num_str);
 	}
-	else if (philo->state == SLEEP)
-	{
-		philo->state = THINK;
-		print_state(philo, 0);
-	}
+	pthread_mutex_unlock(philo->output);
+	ft_usleep(philo->time_to_eat);
+	pthread_mutex_unlock(philo->first_fork);
+	pthread_mutex_unlock(philo->second_fork);
 }
 
 void	*philo_routine(void *philo_void)
 {
 	t_philo		*philo;
 	pthread_t	death;
-	int			nb_meals;
 
 	philo = (t_philo*)philo_void;
 	philo->start_ts = get_timestamp(0);
-	nb_meals = 0;
 	if (pthread_create(&death, NULL, &routine_death, philo) != 0)
 		return (thread_error(CREATE_THREAD_ERROR));
-	while (*(philo->nb_finished) != philo->nb_philo)
-		philo_loop(philo, &nb_meals);
-	if (*(philo->nb_finished) == philo->nb_philo)
-		pthread_mutex_unlock(philo->is_dead);
-	if (pthread_detach(death) != 0)
-		thread_error(DETACH_THREAD_ERROR);
+	pthread_detach(death);
+	philo->is_finished = 0;
+	philo->nb_meal = 0;
+	philo->last_eat_date = 0;
+	while (philo->nb_meal < philo->nb_meal_max)
+	{
+		routine_eat(philo);
+		routine_sleep(philo);
+		routine_think(philo);
+		usleep(100);
+	}
+	philo->is_finished = 1;
 	return (NULL);
 }
