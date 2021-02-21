@@ -18,7 +18,8 @@ void	*routine_death(void *philo_void)
 	int		ts;
 
 	philo = (t_philo*)philo_void;
-	while (philo->nb_meal != philo->nb_meal_max)
+	while (philo->nb_meal < philo->nb_meal_max
+		&& !philo->is_finished)
 	{
 		ts = get_timestamp(philo->start_ts);
 		if ((philo->time_to_die < ts - philo->last_eat_date)
@@ -109,7 +110,8 @@ void	*philo_routine(void *philo_void)
 	if (pthread_create(&death, NULL, &routine_death, philo) != 0)
 		return (thread_error(CREATE_THREAD_ERROR));
 	pthread_detach(death);
-	while (philo->nb_meal < philo->nb_meal_max)
+	while (philo->nb_meal < philo->nb_meal_max
+		&& !philo->is_finished)
 	{
 		routine_eat(philo);
 		routine_sleep(philo);
