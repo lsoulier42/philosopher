@@ -21,7 +21,7 @@
 # include <semaphore.h>
 # include <fcntl.h>
 # include <sys/stat.h>
-# define UNLIMITED_MEAL -1
+# include <limits.h>
 # define MIN_NB_ARGS 5
 # define MAX_NB_ARGS 6
 
@@ -30,7 +30,6 @@ typedef enum		e_philo_state
 	EAT,
 	SLEEP,
 	THINK,
-	HAS_FORKS,
 	DEAD,
 	TOTAL_STATES
 }					t_philo_state;
@@ -41,8 +40,6 @@ typedef enum		e_thread_errors
 	SEM_OPEN_ERROR,
 	SEM_CLOSE_ERROR,
 	SEM_POST_ERROR,
-	SEM_WAIT_ERROR,
-	DETACH_THREAD_ERROR,
 	TOTAL_THREAD_ERRORS
 }					t_thread_errors;
 
@@ -56,11 +53,10 @@ typedef struct		s_philo
 	int				nb_meal_max;
 	long			last_eat_date;
 	long			start_ts;
-	int				*nb_finished;
-	int				nb_philo;
+	int				nb_meal;
+	int				is_finished;
 	sem_t			*forks;
 	sem_t			*output;
-	sem_t			*is_dead;
 }					t_philo;
 
 typedef struct		s_data
@@ -74,15 +70,12 @@ typedef struct		s_data
 	int				nb_finished;
 	sem_t			*forks;
 	sem_t			*output;
-	sem_t			*is_dead;
-	pthread_t		*philosophers_threads;
 	t_philo			*philosophers;
 }					t_data;
 
 int					init_data(t_data *philo_data, int argc, char **argv);
 int					delete_data(t_data *philo_data);
 int					alloc_struct(t_data *philo_data);
-int					free_struct(t_data *philo_data);
 int					init_struct(t_data *philo_data);
 
 int					check_args(int argc, char **argv);
@@ -96,11 +89,11 @@ int					ft_isdigit(int c);
 
 int					init_philosophers(t_data *philo_data);
 int					load_threads(t_data *philo_data);
-int					delete_threads(t_data *philo_data);
+
 void				*thread_error(int code);
 
 void				*philo_routine(void *philo_data_void);
-void				philo_loop(t_philo *philo, int *nb_meals);
+
 void				routine_eat(t_philo *philo);
 void				*routine_death(void *philo_void);
 
@@ -109,6 +102,9 @@ int					delete_semaphores(t_data *philo_data);
 void				unlink_semaphores(void);
 
 long				get_timestamp(long start_ts);
-void				print_state(t_philo *philo, int is_dead);
+void				ft_usleep(int duration);
+void				print_state(int is_finished, char *ts_str,
+						char *num_str, char *state);
+char				*ft_itoa(int n);
 
 #endif

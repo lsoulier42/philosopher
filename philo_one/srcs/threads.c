@@ -12,6 +12,18 @@
 
 #include "philo_one.h"
 
+void	init_philosophers_loop(t_data *philo_data, t_philo *philo)
+{
+	philo->state = SLEEP;
+	philo->time_to_die = philo_data->time_to_die;
+	philo->time_to_eat = philo_data->time_to_eat;
+	philo->time_to_sleep = philo_data->time_to_sleep;
+	philo->nb_meal_max = philo_data->nb_meal_max;
+	philo->output = &philo_data->output;
+	philo->is_finished = 0;
+	philo->nb_meal = 0;
+}
+
 int		init_philosophers(t_data *philo_data)
 {
 	int				i;
@@ -24,18 +36,13 @@ int		init_philosophers(t_data *philo_data)
 	{
 		philo = philo_data->philosophers + i;
 		philo->num = i + 1;
-		philo->state = SLEEP;
-		philo->time_to_die = philo_data->time_to_die;
-		philo->time_to_eat = philo_data->time_to_eat;
-		philo->time_to_sleep = philo_data->time_to_sleep;
-		philo->nb_meal_max = philo_data->nb_meal_max;
+		init_philosophers_loop(philo_data, philo);
 		left = philo_data->forks + i;
 		right = philo_data->forks + philo_data->nb_philo - 1;
 		if (i != 0)
 			right = philo_data->forks + i - 1;
 		philo->first_fork = philo->num % 2 == 0 ? right : left;
 		philo->second_fork = philo->num % 2 == 0 ? left : right;
-		philo->output = &philo_data->output;
 	}
 	return (1);
 }
