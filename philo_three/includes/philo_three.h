@@ -23,7 +23,7 @@
 # include <sys/stat.h>
 # include <signal.h>
 # include <sys/wait.h>
-# define UNLIMITED_MEAL -1
+# include <limits.h>
 # define MIN_NB_ARGS 5
 # define MAX_NB_ARGS 6
 
@@ -32,7 +32,6 @@ typedef enum		e_philo_state
 	EAT,
 	SLEEP,
 	THINK,
-	HAS_FORKS,
 	DEAD,
 	TOTAL_STATES
 }					t_philo_state;
@@ -42,7 +41,6 @@ typedef enum		e_thread_errors
 	CREATE_THREAD_ERROR,
 	SEM_OPEN_ERROR,
 	SEM_CLOSE_ERROR,
-	DETACH_THREAD_ERROR,
 	FORK_ERROR,
 	TOTAL_THREAD_ERRORS
 }					t_thread_errors;
@@ -55,7 +53,7 @@ typedef struct		s_philo
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				nb_meal_max;
-	int				nb_meal_taken;
+	int				nb_meal;
 	long			last_eat_date;
 	long			start_ts;
 	sem_t			*forks;
@@ -97,7 +95,6 @@ int					delete_processes(t_data *philo_data);
 void				*thread_error(int code);
 
 int					philo_routine(t_philo *philo);
-void				philo_loop(t_philo *philo);
 void				routine_eat(t_philo *philo);
 void				*routine_death(void *philo_void);
 
@@ -107,6 +104,8 @@ void				unlink_semaphores(void);
 void				unlock_semaphores(t_data *philo_data);
 
 long				get_timestamp(long start_ts);
-void				print_state(t_philo *philo, int is_dead);
+void				print_state(char *ts_str, char *num_str, char *state);
+char				*ft_itoa(int n);
+void				ft_usleep(int duration);
 
 #endif

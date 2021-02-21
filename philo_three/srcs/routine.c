@@ -15,54 +15,90 @@
 void	*routine_death(void *philo_void)
 {
 	t_philo *philo;
+	int		ts;
 
 	philo = (t_philo*)philo_void;
-	while (philo->nb_meal_taken != philo->nb_meal_max)
+	while (philo->nb_meal < philo->nb_meal_max)
 	{
-		if ((philo->time_to_die
-			< get_timestamp(philo->start_ts) - philo->last_eat_date)
+		ts = get_timestamp(philo->start_ts);
+		if ((philo->time_to_die < ts - philo->last_eat_date)
 			&& philo->state != EAT)
 		{
+			sem_wait(philo->output);
 			philo->state = DEAD;
-			print_state(philo, 1);
-			philo->nb_meal_taken = philo->nb_meal_max;
+			philo->nb_meal = philo->nb_meal_max;
+			printf("%d %d died\n", ts, philo->num);
+			break ;
 		}
-		usleep(10);
+		usleep(100);
 	}
-	exit(philo->state);
+	if (philo->state == DEAD)
+		exit(DEAD);
+	return (NULL);
 }
 
 void	routine_eat(t_philo *philo)
 {
-	if (sem_wait(philo->forks) == 0 && sem_wait(philo->forks) == 0)
+	char *ts_str;
+	char *num_str;
+
+	sem_wait(philo->forks);
+	sem_wait(philo->forks);
+	philo->state = EAT;
+	philo->nb_meal += 1;
+	philo->last_eat_date = get_timestamp(philo->start_ts);
+	sem_wait(philo->output);
+	ts_str = ft_itoa(philo->last_eat_date);
+	num_str = ft_itoa(philo->num);
+	if (ts_str && num_str)
 	{
-		philo->state = EAT;
-		philo->last_eat_date = get_timestamp(philo->start_ts);
-		print_state(philo, 0);
-		usleep(philo->time_to_eat * 1000);
-		sem_post(philo->forks);
-		sem_post(philo->forks);
+		print_state(ts_str, num_str, "has taken a fork");
+		print_state(ts_str, num_str, "has taken a fork");
+		print_state(ts_str, num_str, "is eating");
+		free(ts_str);
+		free(num_str);
 	}
+	sem_post(philo->output);
+	ft_usleep(philo->time_to_eat);
+	sem_post(philo->forks);
+	sem_post(philo->forks);
 }
 
-void	philo_loop(t_philo *philo)
+void	routine_sleep(t_philo *philo)
 {
-	if (philo->state == THINK)
+	char *ts_str;
+	char *num_str;
+
+	sem_wait(philo->output);
+	philo->state = SLEEP;
+	ts_str = ft_itoa(get_timestamp(philo->start_ts));
+	num_str = ft_itoa(philo->num);
+	if (ts_str && num_str)
 	{
-		routine_eat(philo);
-		philo->nb_meal_taken += 1;
+		print_state(ts_str, num_str, "is sleeping");
+		free(ts_str);
+		free(num_str);
 	}
-	else if (philo->state == EAT)
+	sem_post(philo->output);
+	ft_usleep(philo->time_to_sleep);
+}
+
+void	routine_think(t_philo *philo)
+{
+	char *ts_str;
+	char *num_str;
+
+	sem_wait(philo->output);
+	philo->state = THINK;
+	ts_str = ft_itoa(get_timestamp(philo->start_ts));
+	num_str = ft_itoa(philo->num);
+	if (ts_str && num_str)
 	{
-		philo->state = SLEEP;
-		print_state(philo, 0);
-		usleep(philo->time_to_sleep * 1000);
+		print_state(ts_str, num_str, "is thinking");
+		free(ts_str);
+		free(num_str);
 	}
-	else if (philo->state == SLEEP)
-	{
-		philo->state = THINK;
-		print_state(philo, 0);
-	}
+	sem_post(philo->output);
 }
 
 int		philo_routine(t_philo *philo)
@@ -72,12 +108,15 @@ int		philo_routine(t_philo *philo)
 	philo->start_ts = get_timestamp(0);
 	if (pthread_create(&death, NULL, &routine_death, philo) != 0)
 		return (thread_error(CREATE_THREAD_ERROR) != NULL);
-	while (philo->nb_meal_taken != philo->nb_meal_max)
+	pthread_detach(death);
+	while (philo->nb_meal < philo->nb_meal_max)
 	{
-		philo_loop(philo);
-		usleep(10);
+		routine_eat(philo);
+		routine_sleep(philo);
+		routine_think(philo);
+		usleep(100);
 	}
-	if (pthread_detach(death) != 0)
-		thread_error(DETACH_THREAD_ERROR);
+	sem_close(philo->forks);
+	sem_close(philo->output);
 	exit(philo->state);
 }

@@ -19,6 +19,7 @@ void	unlock_semaphores(t_data *philo_data)
 	i = -(philo_data->nb_philo);
 	while (++i < philo_data->nb_philo)
 		sem_post(philo_data->forks);
+	usleep(10000);
 }
 
 void	unlink_semaphores(void)

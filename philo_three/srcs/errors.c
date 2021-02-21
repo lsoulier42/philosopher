@@ -56,7 +56,7 @@ void	*thread_error(int code)
 
 	errors = (char *[TOTAL_THREAD_ERRORS]){"Creating thread went wrong",
 		"Opening semaphore went wrong", "Closing semaphore went wrong",
-		"Detaching thread went wrong", "Fork went wrong"};
+		"Fork went wrong"};
 	printf("Error\n%s\n", errors[code]);
 	return (NULL);
 }

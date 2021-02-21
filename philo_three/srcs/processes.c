@@ -30,7 +30,7 @@ int	init_philosophers(t_data *philo_data)
 		current->last_eat_date = 0;
 		current->forks = philo_data->forks;
 		current->output = philo_data->output;
-		current->nb_meal_taken = 0;
+		current->nb_meal = 0;
 	}
 	return (1);
 }
